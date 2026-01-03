@@ -18,13 +18,13 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Eye, Download } from 'lucide-react';
 import {
   getRegistrationRequestById,
   approveRegistrationRequest,
   denyRegistrationRequest,
 } from '../../api/registrationRequests';
-import { RegistrationRequestDetail, RegistrationStatus, RegisterationType } from '../../types';
+import { RegistrationRequestDetail, RegistrationStatus, RegisterationType, FileDownload } from '../../types';
 
 const RegistrationRequestDetailPage = () => {
   const { t } = useTranslation();
@@ -111,15 +111,12 @@ const RegistrationRequestDetailPage = () => {
   };
 
   const getStatusBadge = (status: RegistrationStatus) => {
-    console.log(typeof status);
-    
-    
     switch (status) {
-      case RegistrationStatus.requested:
+      case RegistrationStatus.Requested:
         return <Badge colorScheme="yellow" fontSize="md" px={3} py={1}>Requested</Badge>;
-      case RegistrationStatus.accepted:
+      case RegistrationStatus.Accepted:
         return <Badge colorScheme="green" fontSize="md" px={3} py={1}>Accepted</Badge>;
-      case RegistrationStatus.declined:
+      case RegistrationStatus.Declined:
         return <Badge colorScheme="red" fontSize="md" px={3} py={1}>Declined</Badge>;
       default:
         return <Badge fontSize="md" px={3} py={1}>Unknown</Badge>;
@@ -130,91 +127,83 @@ const RegistrationRequestDetailPage = () => {
     return type === RegisterationType.AsContractors ? 'Contractor' : 'Supplier';
   };
 
-  const getFileExtension = (url: string): string => {
-    const parts = url.toLowerCase().split('.');
-    return parts[parts.length - 1].split('?')[0];
+  const getFileExtension = (fileName: string | null): string => {
+    if (!fileName) return '';
+    const parts = fileName.toLowerCase().split('.');
+    return parts[parts.length - 1];
   };
 
-  const renderDocumentPreview = (url: string, title: string) => {
-    const extension = getFileExtension(url);
-    
-    if (['jpg', 'jpeg', 'png'].includes(extension)) {
+  const handlePreview = (url: string) => {
+    window.open(url, '_blank');
+  };
+
+  const handleDownload = (url: string, fileName: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const renderDocumentCard = (fileDownload: FileDownload, title: string, fileId: string) => {
+    if (!fileDownload.presignedUrl || !fileDownload.fileName) {
       return (
-        <VStack align="start" spacing={2} w="full">
-          <Text fontSize="sm" color="gray.600" mb={2}>{title}</Text>
-          <Image
-            src={url}
-            alt={title}
-            maxH="300px"
-            objectFit="contain"
-            borderRadius="md"
-            border="1px solid"
-            borderColor="gray.200"
-            cursor="pointer"
-            onClick={() => window.open(url, '_blank')}
-          />
-          <Button
-            as="a"
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            colorScheme="blue"
-            size="sm"
-            variant="outline"
-          >
-            Open in New Tab
-          </Button>
-        </VStack>
-      );
-    } else if (extension === 'pdf') {
-      return (
-        <VStack align="start" spacing={2} w="full">
-          <Text fontSize="sm" color="gray.600" mb={2}>{title}</Text>
-          <Box
-            w="full"
-            h="400px"
-            border="1px solid"
-            borderColor="gray.200"
-            borderRadius="md"
-            overflow="hidden"
-          >
-            <iframe
-              src={url}
-              width="100%"
-              height="100%"
-              title={title}
-              style={{ border: 'none' }}
-            />
-          </Box>
-          <Button
-            as="a"
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            colorScheme="blue"
-            size="sm"
-          >
-            Open in New Tab
-          </Button>
-        </VStack>
-      );
-    } else {
-      return (
-        <VStack align="start" spacing={2}>
-          <Text fontSize="sm" color="gray.600" mb={2}>{title}</Text>
-          <Button
-            as="a"
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            colorScheme="blue"
-            size="sm"
-          >
-            View Document
-          </Button>
-        </VStack>
+        <Box p={4} border="1px solid" borderColor="gray.200" borderRadius="md" bg="gray.50">
+          <VStack align="start" spacing={2}>
+            <Text fontSize="md" fontWeight="semibold" color="gray.700">{title}</Text>
+            <Text fontSize="sm" color="gray.500">File not available</Text>
+          </VStack>
+        </Box>
       );
     }
+
+    const extension = getFileExtension(fileDownload.fileName);
+    const url = fileDownload.presignedUrl;
+    const fileSizeKB = (fileDownload.fileSize / 1024).toFixed(2);
+    
+    return (
+      <Box border="1px solid" borderColor="gray.200" borderRadius="md" overflow="hidden">
+        {/* File Info Header */}
+        <Box p={4} bg="gray.50" borderBottom="1px solid" borderColor="gray.200">
+          <VStack align="start" spacing={2}>
+            <Text fontSize="md" fontWeight="semibold" color="gray.700">{title}</Text>
+            <HStack spacing={4} fontSize="sm" color="gray.600">
+              <Text>{fileDownload.fileName}</Text>
+              <Text>•</Text>
+              <Text>{fileSizeKB} KB</Text>
+              <Text>•</Text>
+              <Text textTransform="uppercase">{extension}</Text>
+            </HStack>
+          </VStack>
+        </Box>
+
+        {/* Action Buttons */}
+        <Box p={4} bg="white">
+          <HStack spacing={3}>
+            <Button
+              leftIcon={<Eye size={18} />}
+              colorScheme="blue"
+              size="md"
+              onClick={() => handlePreview(url)}
+              flex={1}
+            >
+              Preview
+            </Button>
+            <Button
+              leftIcon={<Download size={18} />}
+              colorScheme="green"
+              variant="outline"
+              size="md"
+              onClick={() => handleDownload(url, fileDownload.fileName!)}
+              flex={1}
+            >
+              Download
+            </Button>
+          </HStack>
+        </Box>
+      </Box>
+    );
   };
 
   if (loading) {
@@ -321,10 +310,10 @@ const RegistrationRequestDetailPage = () => {
             <Heading size="md" mb={4} color="brand.primary">
               Documents
             </Heading>
-            <SimpleGrid columns={{ base: 1 }} spacing={6}>
-              {request.commercialLicenseUrl && renderDocumentPreview(request.commercialLicenseUrl, 'Commercial License')}
-              {request.taxLicenseUrl && renderDocumentPreview(request.taxLicenseUrl, 'Tax License')}
-            </SimpleGrid>
+            <VStack spacing={4} align="stretch">
+              {request.commercialLicenseUrl && renderDocumentCard(request.commercialLicenseUrl, 'Commercial License', 'commercial')}
+              {request.taxLicenseUrl && renderDocumentCard(request.taxLicenseUrl, 'Tax License', 'tax')}
+            </VStack>
           </CardBody>
         </Card>
 
@@ -347,7 +336,7 @@ const RegistrationRequestDetailPage = () => {
         </Card>
 
         {/* Actions */}
-        {request.currentStatus === RegistrationStatus.requested && (
+        {request.currentStatus === RegistrationStatus.Requested && (
           <Card shadow="md" borderRadius="xl" bg="gray.50">
             <CardBody>
               <HStack justify="center" spacing={4}>

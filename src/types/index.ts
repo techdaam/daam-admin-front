@@ -54,6 +54,13 @@ export interface OTPVerifyResponse {
   otpSuccessTokenExpireAt: string;
 }
 
+// File Download Types
+export interface FileDownload {
+  presignedUrl: string | null;
+  fileName: string | null;
+  fileSize: number;
+}
+
 // Registration Request Types
 export enum RegistrationStatus {
   Requested = "Requested",
@@ -100,8 +107,8 @@ export interface RegistrationRequestDetail {
   phoneNumber: string;
   currentStatus: RegistrationStatus;
   type: RegisterationType;
-  commercialLicenseUrl: string | null;
-  taxLicenseUrl: string | null;
+  commercialLicenseUrl: FileDownload | null;
+  taxLicenseUrl: FileDownload | null;
   createdAt: string;
   updatedAt: string | null;
 }

@@ -244,7 +244,7 @@ const RegistrationRequests = () => {
                           >
                             View
                           </Button>
-                          {request.currentStatus === RegistrationStatus.requested && (
+                          {request.currentStatus === RegistrationStatus.Requested && (
                             <>
                               <Button
                                 size="sm"
