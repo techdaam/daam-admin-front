@@ -75,12 +75,12 @@ const RegistrationRequests = () => {
 
   const getStatusBadge = (status: RegistrationStatus) => {
     switch (status) {
-      case RegistrationStatus.Pending:
-        return <Badge colorScheme="yellow">Pending</Badge>;
-      case RegistrationStatus.Approved:
-        return <Badge colorScheme="green">Approved</Badge>;
-      case RegistrationStatus.Denied:
-        return <Badge colorScheme="red">Denied</Badge>;
+      case RegistrationStatus.requested:
+        return <Badge colorScheme="yellow">Requested</Badge>;
+      case RegistrationStatus.accepted:
+        return <Badge colorScheme="green">Accepted</Badge>;
+      case RegistrationStatus.declined:
+        return <Badge colorScheme="red">Declined</Badge>;
       default:
         return <Badge>Unknown</Badge>;
     }
@@ -120,9 +120,9 @@ const RegistrationRequests = () => {
                 onChange={(e) => setStatusFilter(e.target.value ? Number(e.target.value) as RegistrationStatus : undefined)}
                 maxW="200px"
               >
-                <option value={RegistrationStatus.Pending}>Pending</option>
-                <option value={RegistrationStatus.Approved}>Approved</option>
-                <option value={RegistrationStatus.Denied}>Denied</option>
+                <option value={RegistrationStatus.Requested}>Requested</option>
+                <option value={RegistrationStatus.Accepted}>Accepted</option>
+                <option value={RegistrationStatus.Declined}>Declined</option>
               </Select>
 
               <InputGroup maxW="300px">

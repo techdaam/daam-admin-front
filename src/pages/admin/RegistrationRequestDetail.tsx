@@ -111,13 +111,16 @@ const RegistrationRequestDetailPage = () => {
   };
 
   const getStatusBadge = (status: RegistrationStatus) => {
+    console.log(typeof status);
+    
+    
     switch (status) {
-      case RegistrationStatus.Pending:
-        return <Badge colorScheme="yellow" fontSize="md" px={3} py={1}>Pending</Badge>;
-      case RegistrationStatus.Approved:
-        return <Badge colorScheme="green" fontSize="md" px={3} py={1}>Approved</Badge>;
-      case RegistrationStatus.Denied:
-        return <Badge colorScheme="red" fontSize="md" px={3} py={1}>Denied</Badge>;
+      case RegistrationStatus.requested:
+        return <Badge colorScheme="yellow" fontSize="md" px={3} py={1}>Requested</Badge>;
+      case RegistrationStatus.accepted:
+        return <Badge colorScheme="green" fontSize="md" px={3} py={1}>Accepted</Badge>;
+      case RegistrationStatus.declined:
+        return <Badge colorScheme="red" fontSize="md" px={3} py={1}>Declined</Badge>;
       default:
         return <Badge fontSize="md" px={3} py={1}>Unknown</Badge>;
     }
@@ -285,7 +288,7 @@ const RegistrationRequestDetailPage = () => {
         </Card>
 
         {/* Actions */}
-        {request.currentStatus === RegistrationStatus.Pending && (
+        {request.currentStatus === RegistrationStatus.Requested && (
           <Card shadow="md" borderRadius="xl" bg="gray.50">
             <CardBody>
               <HStack justify="center" spacing={4}>

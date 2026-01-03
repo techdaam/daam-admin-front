@@ -56,9 +56,9 @@ export interface OTPVerifyResponse {
 
 // Registration Request Types
 export enum RegistrationStatus {
-  Pending = 1,
-  Approved = 2,
-  Denied = 3
+  requested = 1,
+  accepted = 2,
+  declined = 3
 }
 
 export enum RegisterationType {
