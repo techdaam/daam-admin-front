@@ -32,6 +32,7 @@ import {
   denyRegistrationRequest,
 } from '../../api/registrationRequests';
 import { RegistrationRequestDetail, RegistrationStatus, RegisterationType, FileDownload } from '../../types';
+import CustomPDFViewer from '../../tools/FilePreviewer';
 
 const RegistrationRequestDetailPage = () => {
   const { t } = useTranslation();
@@ -260,13 +261,14 @@ const RegistrationRequestDetailPage = () => {
                     borderRadius="md"
                     overflow="hidden"
                   >
-                    <iframe
+                    {/* <iframe
                       src={previewFile.url}
                       width="100%"
                       height="100%"
                       title={previewFile.fileName}
                       style={{ border: 'none' }}
-                    />
+                    /> */}
+                    <CustomPDFViewer presignedUrl={previewFile.url}  ></CustomPDFViewer>
                   </Box>
                 ) : (
                   <Box textAlign="center" py={8}>
