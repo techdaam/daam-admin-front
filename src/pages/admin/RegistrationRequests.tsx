@@ -18,11 +18,15 @@ import {
   useToast,
   Card,
   CardBody,
-  Select,
   Input,
   InputGroup,
   InputLeftElement,
   Icon,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -39,20 +43,32 @@ const RegistrationRequests = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [statusFilter, setStatusFilter] = useState<RegistrationStatus | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<number>(0);
   const [emailFilter, setEmailFilter] = useState<string>('');
+
+  const getStatusForTab = (tabIndex: number): RegistrationStatus => {
+    switch (tabIndex) {
+      case 0:
+        return RegistrationStatus.Requested;
+      case 1:
+        return RegistrationStatus.Accepted;
+      case 2:
+        return RegistrationStatus.Declined;
+      default:
+        return RegistrationStatus.Requested;
+    }
+  };
 
   useEffect(() => {
     fetchRequests();
-  }, [page, statusFilter]);
+  }, [page, activeTab]);
 
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const filters: any = {};
-      if (statusFilter !== undefined) {
-        filters.status = statusFilter;
-      }
+      const filters: any = {
+        status: getStatusForTab(activeTab),
+      };
       if (emailFilter) {
         filters.email = emailFilter;
       }
@@ -71,6 +87,12 @@ const RegistrationRequests = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTabChange = (index: number) => {
+    setActiveTab(index);
+    setPage(1);
+    setEmailFilter('');
   };
 
   const getStatusBadge = (status: RegistrationStatus) => {
@@ -162,56 +184,71 @@ const RegistrationRequests = () => {
           <Text color="gray.600">Review and manage registration requests</Text>
         </Box>
 
-        {/* Filters */}
-        <Card shadow="md" borderRadius="xl">
-          <CardBody>
-            <HStack spacing={4}>
-              <Select
-                placeholder="Filter by status"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value ? Number(e.target.value) as RegistrationStatus : undefined)}
-                maxW="200px"
-              >
-                <option value={RegistrationStatus.Requested}>Requested</option>
-                <option value={RegistrationStatus.Accepted}>Accepted</option>
-                <option value={RegistrationStatus.Declined}>Declined</option>
-              </Select>
+        {/* Tabs */}
+        <Tabs index={activeTab} onChange={handleTabChange} colorScheme="blue">
+          <TabList>
+            <Tab>
+              <HStack spacing={2}>
+                <Text>Pending</Text>
+                <Badge colorScheme="yellow" borderRadius="full">
+                  {activeTab === 0 ? requests.length : ''}
+                </Badge>
+              </HStack>
+            </Tab>
+            <Tab>
+              <HStack spacing={2}>
+                <Text>Accepted</Text>
+                <Badge colorScheme="green" borderRadius="full">
+                  {activeTab === 1 ? requests.length : ''}
+                </Badge>
+              </HStack>
+            </Tab>
+            <Tab>
+              <HStack spacing={2}>
+                <Text>Declined</Text>
+                <Badge colorScheme="red" borderRadius="full">
+                  {activeTab === 2 ? requests.length : ''}
+                </Badge>
+              </HStack>
+            </Tab>
+          </TabList>
 
-              <InputGroup maxW="300px">
-                <InputLeftElement>
-                  <Icon as={Search} color="gray.400" />
-                </InputLeftElement>
-                <Input
-                  placeholder="Search by email"
-                  value={emailFilter}
-                  onChange={(e) => setEmailFilter(e.target.value)}
-                />
-              </InputGroup>
+          <TabPanels>
+            <TabPanel px={0}>
+              {/* Search for Pending */}
+              <Card shadow="md" borderRadius="xl" mb={4}>
+                <CardBody>
+                  <HStack spacing={4}>
+                    <InputGroup maxW="400px">
+                      <InputLeftElement>
+                        <Icon as={Search} color="gray.400" />
+                      </InputLeftElement>
+                      <Input
+                        placeholder="Search by email"
+                        value={emailFilter}
+                        onChange={(e) => setEmailFilter(e.target.value)}
+                      />
+                    </InputGroup>
 
-              <Button
-                colorScheme="blue"
-                onClick={handleSearch}
-              >
-                Search
-              </Button>
+                    <Button colorScheme="blue" onClick={handleSearch}>
+                      Search
+                    </Button>
 
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setStatusFilter(undefined);
-                  setEmailFilter('');
-                  setPage(1);
-                  fetchRequests();
-                }}
-              >
-                Clear
-              </Button>
-            </HStack>
-          </CardBody>
-        </Card>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEmailFilter('');
+                        setPage(1);
+                        fetchRequests();
+                      }}
+                    >
+                      Clear
+                    </Button>
+                  </HStack>
+                </CardBody>
+              </Card>
 
-        {/* Table */}
-        <Card shadow="md" borderRadius="xl" overflow="hidden">
+              <Card shadow="md" borderRadius="xl" overflow="hidden">
           <CardBody p={0}>
             <Box overflowX="auto">
               <Table variant="simple">
@@ -277,8 +314,171 @@ const RegistrationRequests = () => {
                 <Text color="gray.500">No registration requests found</Text>
               </Box>
             )}
-          </CardBody>
-        </Card>
+              </CardBody>
+            </Card>
+            </TabPanel>
+
+            <TabPanel px={0}>
+              {/* Search for Accepted */}
+              <Card shadow="md" borderRadius="xl" mb={4}>
+                <CardBody>
+                  <HStack spacing={4}>
+                    <InputGroup maxW="400px">
+                      <InputLeftElement>
+                        <Icon as={Search} color="gray.400" />
+                      </InputLeftElement>
+                      <Input
+                        placeholder="Search by email"
+                        value={emailFilter}
+                        onChange={(e) => setEmailFilter(e.target.value)}
+                      />
+                    </InputGroup>
+
+                    <Button colorScheme="blue" onClick={handleSearch}>
+                      Search
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEmailFilter('');
+                        setPage(1);
+                        fetchRequests();
+                      }}
+                    >
+                      Clear
+                    </Button>
+                  </HStack>
+                </CardBody>
+              </Card>
+
+              <Card shadow="md" borderRadius="xl" overflow="hidden">
+                <CardBody p={0}>
+                  <Box overflowX="auto">
+                    <Table variant="simple">
+                      <Thead bg="gray.50">
+                        <Tr>
+                          <Th>Company Name</Th>
+                          <Th>Email</Th>
+                          <Th>Type</Th>
+                          <Th>Accepted At</Th>
+                          <Th>Actions</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {requests.map((request) => (
+                          <Tr key={request.id} _hover={{ bg: 'gray.50' }}>
+                            <Td fontWeight="semibold">{request.companyName}</Td>
+                            <Td>{request.email}</Td>
+                            <Td>{getTypeBadge(request.type)}</Td>
+                            <Td>{new Date(request.createdAt).toLocaleDateString()}</Td>
+                            <Td>
+                              <Button
+                                size="sm"
+                                leftIcon={<Eye size={16} />}
+                                colorScheme="blue"
+                                variant="outline"
+                                onClick={() => navigate(`/admin/registration-requests/${request.id}`)}
+                              >
+                                View
+                              </Button>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
+
+                  {requests.length === 0 && (
+                    <Box py={8} textAlign="center">
+                      <Text color="gray.500">No accepted requests found</Text>
+                    </Box>
+                  )}
+                </CardBody>
+              </Card>
+            </TabPanel>
+
+            <TabPanel px={0}>
+              {/* Search for Declined */}
+              <Card shadow="md" borderRadius="xl" mb={4}>
+                <CardBody>
+                  <HStack spacing={4}>
+                    <InputGroup maxW="400px">
+                      <InputLeftElement>
+                        <Icon as={Search} color="gray.400" />
+                      </InputLeftElement>
+                      <Input
+                        placeholder="Search by email"
+                        value={emailFilter}
+                        onChange={(e) => setEmailFilter(e.target.value)}
+                      />
+                    </InputGroup>
+
+                    <Button colorScheme="blue" onClick={handleSearch}>
+                      Search
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEmailFilter('');
+                        setPage(1);
+                        fetchRequests();
+                      }}
+                    >
+                      Clear
+                    </Button>
+                  </HStack>
+                </CardBody>
+              </Card>
+
+              <Card shadow="md" borderRadius="xl" overflow="hidden">
+                <CardBody p={0}>
+                  <Box overflowX="auto">
+                    <Table variant="simple">
+                      <Thead bg="gray.50">
+                        <Tr>
+                          <Th>Company Name</Th>
+                          <Th>Email</Th>
+                          <Th>Type</Th>
+                          <Th>Declined At</Th>
+                          <Th>Actions</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {requests.map((request) => (
+                          <Tr key={request.id} _hover={{ bg: 'gray.50' }}>
+                            <Td fontWeight="semibold">{request.companyName}</Td>
+                            <Td>{request.email}</Td>
+                            <Td>{getTypeBadge(request.type)}</Td>
+                            <Td>{new Date(request.createdAt).toLocaleDateString()}</Td>
+                            <Td>
+                              <Button
+                                size="sm"
+                                leftIcon={<Eye size={16} />}
+                                colorScheme="blue"
+                                variant="outline"
+                                onClick={() => navigate(`/admin/registration-requests/${request.id}`)}
+                              >
+                                View
+                              </Button>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
+
+                  {requests.length === 0 && (
+                    <Box py={8} textAlign="center">
+                      <Text color="gray.500">No declined requests found</Text>
+                    </Box>
+                  )}
+                </CardBody>
+              </Card>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
 
         {/* Pagination */}
         {totalPages > 1 && (

@@ -15,6 +15,13 @@ import {
   SimpleGrid,
   Image,
   Divider,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,6 +41,8 @@ const RegistrationRequestDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [processing, setProcessing] = useState<boolean>(false);
   const [request, setRequest] = useState<RegistrationRequestDetail | null>(null);
+  const [previewFile, setPreviewFile] = useState<{ url: string; fileName: string; extension: string } | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     if (id) {
@@ -133,8 +142,10 @@ const RegistrationRequestDetailPage = () => {
     return parts[parts.length - 1];
   };
 
-  const handlePreview = (url: string) => {
-    window.open(url, '_blank');
+  const handlePreview = (url: string, fileName: string) => {
+    const extension = getFileExtension(fileName);
+    setPreviewFile({ url, fileName, extension });
+    onOpen();
   };
 
   const handleDownload = (url: string, fileName: string) => {
@@ -185,7 +196,7 @@ const RegistrationRequestDetailPage = () => {
               leftIcon={<Eye size={18} />}
               colorScheme="blue"
               size="md"
-              onClick={() => handlePreview(url)}
+              onClick={() => handlePreview(url, fileDownload.fileName!)}
               flex={1}
             >
               Preview
@@ -219,7 +230,65 @@ const RegistrationRequestDetailPage = () => {
   }
 
   return (
-    <Container maxW="7xl" py={8}>
+    <>
+      {/* Preview Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="6xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{previewFile?.fileName}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            {previewFile && (
+              <Box>
+                {['jpg', 'jpeg', 'png'].includes(previewFile.extension) ? (
+                  <Box textAlign="center">
+                    <Image
+                      src={previewFile.url}
+                      alt={previewFile.fileName}
+                      maxH="70vh"
+                      maxW="100%"
+                      objectFit="contain"
+                      mx="auto"
+                    />
+                  </Box>
+                ) : previewFile.extension === 'pdf' ? (
+                  <Box
+                    w="full"
+                    h="70vh"
+                    border="1px solid"
+                    borderColor="gray.300"
+                    borderRadius="md"
+                    overflow="hidden"
+                  >
+                    <iframe
+                      src={previewFile.url}
+                      width="100%"
+                      height="100%"
+                      title={previewFile.fileName}
+                      style={{ border: 'none' }}
+                    />
+                  </Box>
+                ) : (
+                  <Box textAlign="center" py={8}>
+                    <Text color="gray.600" mb={4}>Preview not available for this file type</Text>
+                    <Button
+                      as="a"
+                      href={previewFile.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      colorScheme="blue"
+                    >
+                      Open in New Tab
+                    </Button>
+                  </Box>
+                )}
+              </Box>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Container maxW="7xl" py={8}>
       <VStack spacing={6} align="stretch">
         {/* Header */}
         <HStack justify="space-between">
@@ -364,6 +433,7 @@ const RegistrationRequestDetailPage = () => {
         )}
       </VStack>
     </Container>
+    </>
   );
 };
 
