@@ -127,7 +127,94 @@ const RegistrationRequestDetailPage = () => {
   };
 
   const getTypeLabel = (type: RegisterationType) => {
-    return type === RegisterationType.Contractor ? 'Contractor' : 'Supplier';
+    return type === RegisterationType.AsContractors ? 'Contractor' : 'Supplier';
+  };
+
+  const getFileExtension = (url: string): string => {
+    const parts = url.toLowerCase().split('.');
+    return parts[parts.length - 1].split('?')[0];
+  };
+
+  const renderDocumentPreview = (url: string, title: string) => {
+    const extension = getFileExtension(url);
+    
+    if (['jpg', 'jpeg', 'png'].includes(extension)) {
+      return (
+        <VStack align="start" spacing={2} w="full">
+          <Text fontSize="sm" color="gray.600" mb={2}>{title}</Text>
+          <Image
+            src={url}
+            alt={title}
+            maxH="300px"
+            objectFit="contain"
+            borderRadius="md"
+            border="1px solid"
+            borderColor="gray.200"
+            cursor="pointer"
+            onClick={() => window.open(url, '_blank')}
+          />
+          <Button
+            as="a"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            colorScheme="blue"
+            size="sm"
+            variant="outline"
+          >
+            Open in New Tab
+          </Button>
+        </VStack>
+      );
+    } else if (extension === 'pdf') {
+      return (
+        <VStack align="start" spacing={2} w="full">
+          <Text fontSize="sm" color="gray.600" mb={2}>{title}</Text>
+          <Box
+            w="full"
+            h="400px"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="md"
+            overflow="hidden"
+          >
+            <iframe
+              src={url}
+              width="100%"
+              height="100%"
+              title={title}
+              style={{ border: 'none' }}
+            />
+          </Box>
+          <Button
+            as="a"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            colorScheme="blue"
+            size="sm"
+          >
+            Open in New Tab
+          </Button>
+        </VStack>
+      );
+    } else {
+      return (
+        <VStack align="start" spacing={2}>
+          <Text fontSize="sm" color="gray.600" mb={2}>{title}</Text>
+          <Button
+            as="a"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            colorScheme="blue"
+            size="sm"
+          >
+            View Document
+          </Button>
+        </VStack>
+      );
+    }
   };
 
   if (loading) {
@@ -234,37 +321,9 @@ const RegistrationRequestDetailPage = () => {
             <Heading size="md" mb={4} color="brand.primary">
               Documents
             </Heading>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              {request.commercialLicenseUrl && (
-                <Box>
-                  <Text fontSize="sm" color="gray.600" mb={2}>Commercial License</Text>
-                  <Button
-                    as="a"
-                    href={request.commercialLicenseUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    colorScheme="blue"
-                    size="sm"
-                  >
-                    View Document
-                  </Button>
-                </Box>
-              )}
-              {request.taxLicenseUrl && (
-                <Box>
-                  <Text fontSize="sm" color="gray.600" mb={2}>Tax License</Text>
-                  <Button
-                    as="a"
-                    href={request.taxLicenseUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    colorScheme="blue"
-                    size="sm"
-                  >
-                    View Document
-                  </Button>
-                </Box>
-              )}
+            <SimpleGrid columns={{ base: 1 }} spacing={6}>
+              {request.commercialLicenseUrl && renderDocumentPreview(request.commercialLicenseUrl, 'Commercial License')}
+              {request.taxLicenseUrl && renderDocumentPreview(request.taxLicenseUrl, 'Tax License')}
             </SimpleGrid>
           </CardBody>
         </Card>
@@ -288,7 +347,7 @@ const RegistrationRequestDetailPage = () => {
         </Card>
 
         {/* Actions */}
-        {request.currentStatus === RegistrationStatus.Requested && (
+        {request.currentStatus === RegistrationStatus.requested && (
           <Card shadow="md" borderRadius="xl" bg="gray.50">
             <CardBody>
               <HStack justify="center" spacing={4}>

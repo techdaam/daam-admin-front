@@ -26,9 +26,9 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Search, Eye } from 'lucide-react';
-import { getRegistrationRequests } from '../../api/registrationRequests';
-import { RegistrationRequestListItem, RegistrationStatus } from '../../types';
+import { Search, Eye, CheckCircle, XCircle } from 'lucide-react';
+import { getRegistrationRequests, approveRegistrationRequest, denyRegistrationRequest } from '../../api/registrationRequests';
+import { RegistrationRequestListItem, RegistrationStatus, RegisterationType } from '../../types';
 
 const RegistrationRequests = () => {
   const { t } = useTranslation();
@@ -75,14 +75,66 @@ const RegistrationRequests = () => {
 
   const getStatusBadge = (status: RegistrationStatus) => {
     switch (status) {
-      case RegistrationStatus.requested:
+      case RegistrationStatus.Requested:
         return <Badge colorScheme="yellow">Requested</Badge>;
-      case RegistrationStatus.accepted:
+      case RegistrationStatus.Accepted:
         return <Badge colorScheme="green">Accepted</Badge>;
-      case RegistrationStatus.declined:
+      case RegistrationStatus.Declined:
         return <Badge colorScheme="red">Declined</Badge>;
       default:
         return <Badge>Unknown</Badge>;
+    }
+  };
+
+  const getTypeBadge = (type: RegisterationType) => {
+    if (type === RegisterationType.AsContractors) {
+      return <Badge colorScheme="blue">Contractor</Badge>;
+    } else {
+      return <Badge colorScheme="orange">Supplier</Badge>;
+    }
+  };
+
+  const handleApprove = async (id: string) => {
+    try {
+      await approveRegistrationRequest(id);
+      toast({
+        title: 'Success',
+        description: 'Registration request approved successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      fetchRequests();
+    } catch (error: any) {
+      toast({
+        title: t('common.error'),
+        description: error.message || t('common.error'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleDeny = async (id: string) => {
+    try {
+      await denyRegistrationRequest(id);
+      toast({
+        title: 'Success',
+        description: 'Registration request declined',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      fetchRequests();
+    } catch (error: any) {
+      toast({
+        title: t('common.error'),
+        description: error.message || t('common.error'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -167,7 +219,7 @@ const RegistrationRequests = () => {
                   <Tr>
                     <Th>Company Name</Th>
                     <Th>Email</Th>
-                    <Th>City</Th>
+                    <Th>Type</Th>
                     <Th>Status</Th>
                     <Th>Created At</Th>
                     <Th>Actions</Th>
@@ -178,19 +230,41 @@ const RegistrationRequests = () => {
                     <Tr key={request.id} _hover={{ bg: 'gray.50' }}>
                       <Td fontWeight="semibold">{request.companyName}</Td>
                       <Td>{request.email}</Td>
-                      <Td>{request.city}</Td>
+                      <Td>{getTypeBadge(request.type)}</Td>
                       <Td>{getStatusBadge(request.currentStatus)}</Td>
                       <Td>{new Date(request.createdAt).toLocaleDateString()}</Td>
                       <Td>
-                        <Button
-                          size="sm"
-                          leftIcon={<Eye size={16} />}
-                          colorScheme="blue"
-                          variant="outline"
-                          onClick={() => navigate(`/admin/registration-requests/${request.id}`)}
-                        >
-                          View
-                        </Button>
+                        <HStack spacing={2}>
+                          <Button
+                            size="sm"
+                            leftIcon={<Eye size={16} />}
+                            colorScheme="blue"
+                            variant="outline"
+                            onClick={() => navigate(`/admin/registration-requests/${request.id}`)}
+                          >
+                            View
+                          </Button>
+                          {request.currentStatus === RegistrationStatus.requested && (
+                            <>
+                              <Button
+                                size="sm"
+                                leftIcon={<CheckCircle size={14} />}
+                                colorScheme="green"
+                                onClick={() => handleApprove(request.id)}
+                              >
+                                Accept
+                              </Button>
+                              <Button
+                                size="sm"
+                                leftIcon={<XCircle size={14} />}
+                                colorScheme="red"
+                                onClick={() => handleDeny(request.id)}
+                              >
+                                Deny
+                              </Button>
+                            </>
+                          )}
+                        </HStack>
                       </Td>
                     </Tr>
                   ))}

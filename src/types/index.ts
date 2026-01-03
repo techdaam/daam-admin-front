@@ -56,14 +56,14 @@ export interface OTPVerifyResponse {
 
 // Registration Request Types
 export enum RegistrationStatus {
-  requested = 1,
-  accepted = 2,
-  declined = 3
+  Requested = "Requested",
+  Accepted = "Accepted",
+  Declined = "Declined"
 }
 
 export enum RegisterationType {
-  Contractor = 0,
-  Supplier = 1
+  AsContractors = "AsContractors",
+  AsSuppliers = "AsSuppliers"
 }
 
 export interface RegistrationRequestListItem {
@@ -81,6 +81,7 @@ export interface RegistrationRequestListItem {
   email: string;
   phoneNumber: string;
   currentStatus: RegistrationStatus;
+  type: RegisterationType;
   createdAt: string;
   updatedAt: string | null;
 }
