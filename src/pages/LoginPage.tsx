@@ -100,9 +100,8 @@ const LoginPage = () => {
         isClosable: true,
       });
 
-      // Route to appropriate dashboard based on userClass
-      // The login function already maps userClass to role in AuthContext
-      navigate('/');
+      // Route to admin dashboard
+      navigate('/admin/dashboard');
     } catch (err: any) {
       const errorCode = err.response?.data?.code;
       const errorDetail = err.response?.data?.detail;
@@ -344,21 +343,6 @@ const LoginPage = () => {
                   </CardBody>
                 </MotionCard>
 
-                {/* Register Link */}
-                <HStack justify="center" spacing={2}>
-                  <Text color="gray.600" fontSize="sm">
-                    {t('login.noAccount')}
-                  </Text>
-                  <Button
-                    variant="link"
-                    colorScheme="blue"
-                    size="sm"
-                    fontWeight="bold"
-                    onClick={() => navigate('/register')}
-                  >
-                    {t('login.registerNow')}
-                  </Button>
-                </HStack>
               </VStack>
             </Box>
           </MotionBox>

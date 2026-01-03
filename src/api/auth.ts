@@ -1,16 +1,16 @@
 import apiClient from './client';
-import { LoginResponse, RefreshTokenResponse, OTPResponse, OTPVerifyResponse } from '../types';
+import { AdminLoginResponse, RefreshTokenResponse, OTPResponse, OTPVerifyResponse } from '../types';
 
 /**
- * User Login
- * POST /auth/user/login
+ * Admin Login
+ * POST /auth/admin/login
  */
 export const login = async (
   email: string,
   password: string,
   keepLoggedIn: boolean = false
-): Promise<LoginResponse> => {
-  const response = await apiClient.post<LoginResponse>('/auth/user/login', {
+): Promise<AdminLoginResponse> => {
+  const response = await apiClient.post<AdminLoginResponse>('/auth/admin/login', {
     email,
     password,
     keepLoggedIn,
@@ -39,7 +39,7 @@ export const refreshToken = async (
  */
 export const sendOTP = async (
   email: string,
-  purpose: string = 'Registration'
+  purpose: string = 'PasswordReset'
 ): Promise<OTPResponse> => {
   const response = await apiClient.post<OTPResponse>('/auth/otp', {
     email,
@@ -71,7 +71,7 @@ export const verifyOTP = async (
  */
 export const resendOTP = async (
   otpToken: string,
-  purpose: string = 'Registration'
+  purpose: string = 'PasswordReset'
 ): Promise<OTPResponse> => {
   const response = await apiClient.post<OTPResponse>('/auth/resend-otp', {
     otpToken,

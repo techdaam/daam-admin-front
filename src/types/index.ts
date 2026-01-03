@@ -1,28 +1,19 @@
 // User & Auth Types
 export interface User {
   id: string;
-  role: 'Contractor' | 'Supplier';
-  userClass: string;
-  firstName: string;
-  lastName: string;
-  companyName: string;
+  role: 'Admin';
   accessToken: string;
   refreshToken: string;
 }
 
-export interface LoginResponse {
+export interface AdminLoginResponse {
   accessToken: string;
   refreshToken: string;
   userId: string;
-  userClass: string;
-  firstName: string;
-  lastName: string;
-  companyName: string;
 }
 
 export interface RefreshTokenResponse {
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface ProfileResponse {
@@ -30,8 +21,8 @@ export interface ProfileResponse {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'Contractor' | 'Supplier';
-  userClass: string;
+  role: 'Admin' | 'User' | 'SuperAdmin';
+  userClass: 'Admin' | 'Contractors' | 'Suppliers';
   enabled: boolean;
   phoneNumber: string;
   companyName: string;
@@ -52,67 +43,123 @@ export interface UpdateProfileRequest {
 // OTP Types
 export interface OTPResponse {
   otpRequesterToken: string;
+  allowedRetryAt: string;
+  tokenExpireAt: string;
+  attempsLeft: number;
+  resendTimesLeft: number;
 }
 
 export interface OTPVerifyResponse {
   otpSuccessToken: string;
+  otpSuccessTokenExpireAt: string;
 }
 
-// Registration Types
-export interface RegistrationData {
-  userType: 'Contractor' | 'Supplier';
+// Registration Request Types
+export enum RegistrationStatus {
+  Pending = 1,
+  Approved = 2,
+  Denied = 3
+}
+
+export enum RegisterationType {
+  Contractor = 0,
+  Supplier = 1
+}
+
+export interface RegistrationRequestListItem {
+  id: string;
   companyName: string;
   country: string;
   city: string;
   commercialLicenseNumber: string;
-  commercialLicenseFile: File | null;
-  taxLicenseFile: File | null;
+  commercialLicenseObjectKey: string | null;
+  taxLicenseObjectKey: string | null;
   website: string;
   firstName: string;
   lastName: string;
   jobTitle: string;
   email: string;
   phoneNumber: string;
-  password: string;
-  retryPassword: string;
-}
-
-// Request & Bid Types
-export interface MaterialItem {
-  id: number;
-  name: string;
-  quantity: number;
-  unit: string;
-  description?: string;
-  specifications?: string;
-}
-
-export interface Request {
-  id: number;
-  title: string;
-  description: string;
-  items: MaterialItem[];
-  deadline: string;
+  currentStatus: RegistrationStatus;
   createdAt: string;
-  status: 'open' | 'closed';
-  bidsCount: number;
-  contractorId: number;
-  contractorName: string;
-  contractorCompany: string;
-  deliveryLocation?: string;
-  deliveryDate?: string;
-  notes?: string;
+  updatedAt: string | null;
 }
 
-export interface Bid {
-  id: number;
-  requestId: number;
-  supplierId: number;
-  supplierName: string;
-  supplierCompany: string;
-  totalPrice: number;
-  status: 'pending' | 'accepted' | 'rejected';
+export interface RegistrationRequestDetail {
+  id: string;
+  companyName: string;
+  country: string;
+  city: string;
+  commercialLicenseNumber: string;
+  website: string;
+  firstName: string;
+  lastName: string;
+  jobTitle: string;
+  email: string;
+  phoneNumber: string;
+  currentStatus: RegistrationStatus;
+  type: RegisterationType;
+  commercialLicenseUrl: string | null;
+  taxLicenseUrl: string | null;
   createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface RegistrationRequestsPagedResponse {
+  items: RegistrationRequestListItem[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// User Management Types
+export interface UserListItem {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'Admin' | 'User' | 'SuperAdmin';
+  userClass: 'Admin' | 'Contractors' | 'Suppliers';
+  enabled: boolean;
+  phoneNumber: string;
+  city: string;
+  companyName: string;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface UserDetailResponse {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface UsersPagedResponse {
+  items: UserListItem[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// Orders Types (Placeholder for future implementation)
+export interface Order {
+  id: string;
+  orderNumber: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  totalAmount: number;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface OrdersPagedResponse {
+  items: Order[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 // Form Error Types
@@ -123,7 +170,7 @@ export interface FormErrors {
 // Auth Context Types
 export interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string, keepLoggedIn?: boolean) => Promise<LoginResponse>;
+  login: (email: string, password: string, keepLoggedIn?: boolean) => Promise<AdminLoginResponse>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;

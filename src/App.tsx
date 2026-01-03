@@ -5,17 +5,14 @@ import theme from './theme';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import DashboardLayout from './layouts/DashboardLayout';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-import Profile from './pages/Profile';
 
-// Contractor pages
-import ContractorDashboard from './pages/contractor/Dashboard';
-import CreateRequest from './pages/contractor/CreateRequest';
-
-// Supplier pages
-import SupplierDashboard from './pages/supplier/Dashboard';
-import BrowseRequests from './pages/supplier/BrowseRequests';
+// Admin pages
+import AdminDashboard from './pages/admin/Dashboard';
+import RegistrationRequests from './pages/admin/RegistrationRequests';
+import RegistrationRequestDetail from './pages/admin/RegistrationRequestDetail';
+import Users from './pages/admin/Users';
+import Orders from './pages/admin/Orders';
 
 // Placeholder components for routes not yet implemented
 interface PlaceholderPageProps {
@@ -54,58 +51,37 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
 function AppRoutes() {
   const { user } = useAuth();
-  const userRole = user?.role;
 
   return (
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-      {/* Protected dashboard routes */}
+      {/* Protected admin dashboard routes */}
       <Route
-        path="/"
+        path="/admin"
         element={
           <ProtectedRoute>
             <DashboardLayout />
           </ProtectedRoute>
         }
       >
-            {/* Contractor routes */}
-            {userRole === 'Contractor' && (
-              <>
-                <Route index element={<ContractorDashboard />} />
-                <Route path="create-request" element={<CreateRequest />} />
-                <Route path="my-requests" element={<PlaceholderPage title="طلباتي" />} />
-                <Route path="received-bids" element={<PlaceholderPage title="العروض المستلمة" />} />
-                <Route path="view-bids/:requestId" element={<PlaceholderPage title="عرض العروض" />} />
-                <Route path="active-deals" element={<PlaceholderPage title="الصفقات النشطة" />} />
-                <Route path="messages" element={<PlaceholderPage title="الرسائل" />} />
-                <Route path="settings" element={<PlaceholderPage title="الإعدادات" />} />
-                <Route path="profile" element={<Profile />} />
-              </>
-            )}
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="registration-requests" element={<RegistrationRequests />} />
+        <Route path="registration-requests/:id" element={<RegistrationRequestDetail />} />
+        <Route path="users" element={<Users />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="settings" element={<PlaceholderPage title="Admin Settings" />} />
+        <Route path="profile" element={<PlaceholderPage title="Admin Profile" />} />
+      </Route>
 
-            {/* Supplier routes */}
-            {userRole === 'Supplier' && (
-              <>
-                <Route index element={<SupplierDashboard />} />
-                <Route path="browse-requests" element={<BrowseRequests />} />
-                <Route path="submit-bid/:requestId" element={<PlaceholderPage title="تقديم عرض" />} />
-                <Route path="my-bids" element={<PlaceholderPage title="عروضي" />} />
-                <Route path="active-deals" element={<PlaceholderPage title="الصفقات النشطة" />} />
-                <Route path="catalog" element={<PlaceholderPage title="كتالوج المنتجات" />} />
-                <Route path="messages" element={<PlaceholderPage title="الرسائل" />} />
-                <Route path="settings" element={<PlaceholderPage title="الإعدادات" />} />
-                <Route path="profile" element={<Profile />} />
-              </>
-            )}
-          </Route>
+      {/* Redirect root to admin dashboard */}
+      <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
 
-        {/* Catch all - redirect to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      {/* Catch all - redirect to admin dashboard */}
+      <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+    </Routes>
   );
 }
 

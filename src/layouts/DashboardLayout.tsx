@@ -18,13 +18,6 @@ import { LogOut, Settings, User } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
 
-interface CurrentUser {
-  name: string;
-  company: string;
-  role: string;
-  avatar: string;
-}
-
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -39,20 +32,10 @@ const DashboardLayout = () => {
     navigate('/login');
   };
 
-  // Use user from AuthContext
-  const currentUser: CurrentUser = {
-    name: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
-    company: user?.companyName || '',
-    role: user?.role || '',
-    avatar: user?.firstName && user?.lastName
-      ? `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=1e3a8a&color=fff`
-      : '',
-  };
-
   return (
     <Flex h="100vh" bg="gray.50" overflow="hidden">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} userRole={user?.role || 'Contractor'} onToggle={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
 
       {/* Main Content Area */}
       <Flex flex="1" direction="column" overflow="hidden">
@@ -69,10 +52,10 @@ const DashboardLayout = () => {
             {/* Left: Welcome */}
             <VStack align="start" spacing={0}>
               <Text fontSize="xl" fontWeight="bold" color="gray.800">
-                مرحباً، {currentUser.name}
+                Welcome, Admin
               </Text>
               <Text fontSize="sm" color="gray.600">
-                {currentUser.company}
+                DANAAM Admin Panel
               </Text>
             </VStack>
 
@@ -82,32 +65,29 @@ const DashboardLayout = () => {
                 <HStack spacing={3} cursor="pointer">
                   <VStack align="end" spacing={0}>
                     <Text fontSize="sm" fontWeight="600" color="gray.700">
-                      {currentUser.name}
+                      Admin
                     </Text>
-                    <Badge
-                      colorScheme={currentUser.role === 'Contractor' ? 'blue' : 'orange'}
-                      fontSize="xs"
-                    >
-                      {currentUser.role === 'Contractor' ? 'مقاول' : 'مورد'}
+                    <Badge colorScheme="purple" fontSize="xs">
+                      Administrator
                     </Badge>
                   </VStack>
                   <Avatar
                     size="md"
-                    name={currentUser.name}
-                    src={currentUser.avatar}
+                    name="Admin"
+                    bg="brand.primary"
                   />
                 </HStack>
               </MenuButton>
               <MenuList>
-                <MenuItem icon={<User size={16} />} onClick={() => navigate('/profile')}>
-                  الملف الشخصي
+                <MenuItem icon={<User size={16} />} onClick={() => navigate('/admin/profile')}>
+                  Profile
                 </MenuItem>
-                <MenuItem icon={<Settings size={16} />} onClick={() => navigate('/settings')}>
-                  الإعدادات
+                <MenuItem icon={<Settings size={16} />} onClick={() => navigate('/admin/settings')}>
+                  Settings
                 </MenuItem>
                 <MenuDivider />
                 <MenuItem icon={<LogOut size={16} />} onClick={handleLogout} color="red.500">
-                  تسجيل الخروج
+                  Logout
                 </MenuItem>
               </MenuList>
             </Menu>

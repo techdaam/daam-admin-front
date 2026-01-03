@@ -20,13 +20,9 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileText,
-  PlusCircle,
-  MessageSquare,
-  Settings,
+  Users,
   Package,
-  TrendingUp,
-  Inbox,
-  Send,
+  Settings,
   User,
   LogOut,
   ChevronLeft,
@@ -38,7 +34,6 @@ import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   isOpen: boolean;
-  userRole: 'Contractor' | 'Supplier';
   onToggle: () => void;
 }
 
@@ -49,58 +44,21 @@ interface NavItem {
   group: string;
 }
 
-interface UserData {
-  name: string;
-  company: string;
-  avatar: string;
-  role: string;
-}
-
-const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
+const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Get user data from AuthContext
-  const userName = authUser?.firstName && authUser?.lastName 
-    ? `${authUser.firstName} ${authUser.lastName}` 
-    : 'مستخدم';
-  const userCompany = authUser?.companyName || 'الشركة';
-  const avatarName = authUser?.firstName && authUser?.lastName
-    ? `${authUser.firstName}+${authUser.lastName}`
-    : 'User';
-  
-  const user: UserData = {
-    name: userName,
-    company: userCompany,
-    avatar: userRole === 'Contractor' 
-      ? `https://ui-avatars.com/api/?name=${avatarName}&background=1e3a8a&color=fff`
-      : `https://ui-avatars.com/api/?name=${avatarName}&background=f59e0b&color=fff`,
-    role: userRole,
-  };
-
-  // Navigation items based on user role
-  const contractorNavItems: NavItem[] = [
-    { name: 'لوحة التحكم', path: '/', icon: LayoutDashboard, group: 'main' },
-    { name: 'إنشاء طلب جديد', path: '/create-request', icon: PlusCircle, group: 'main' },
-    { name: 'طلباتي', path: '/my-requests', icon: FileText, group: 'requests' },
-    { name: 'العروض المستلمة', path: '/received-bids', icon: Inbox, group: 'requests' },
-    { name: 'الصفقات النشطة', path: '/active-deals', icon: TrendingUp, group: 'deals' },
-    { name: 'الرسائل', path: '/messages', icon: MessageSquare, group: 'other' },
-    { name: 'الإعدادات', path: '/settings', icon: Settings, group: 'other' },
+  // Admin navigation items
+  const adminNavItems: NavItem[] = [
+    { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard, group: 'main' },
+    { name: 'Registration Requests', path: '/admin/registration-requests', icon: FileText, group: 'main' },
+    { name: 'Users', path: '/admin/users', icon: Users, group: 'main' },
+    { name: 'Orders', path: '/admin/orders', icon: Package, group: 'main' },
+    { name: 'Settings', path: '/admin/settings', icon: Settings, group: 'other' },
   ];
 
-  const supplierNavItems: NavItem[] = [
-    { name: 'لوحة التحكم', path: '/', icon: LayoutDashboard, group: 'main' },
-    { name: 'تصفح الطلبات', path: '/browse-requests', icon: FileText, group: 'main' },
-    { name: 'عروضي', path: '/my-bids', icon: Send, group: 'bids' },
-    { name: 'الصفقات النشطة', path: '/active-deals', icon: TrendingUp, group: 'deals' },
-    { name: 'كتالوج المنتجات', path: '/catalog', icon: Package, group: 'other' },
-    { name: 'الرسائل', path: '/messages', icon: MessageSquare, group: 'other' },
-    { name: 'الإعدادات', path: '/settings', icon: Settings, group: 'other' },
-  ];
-
-  const navItems = userRole === 'Contractor' ? contractorNavItems : supplierNavItems;
+  const navItems = adminNavItems;
 
   // Group items
   const groupedItems = navItems.reduce<Record<string, NavItem[]>>((acc, item) => {
@@ -108,11 +66,6 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
     acc[item.group].push(item);
     return acc;
   }, {});
-
-  const bgGradient = useColorModeValue(
-    'linear(to-b, rgba(255,255,255,0.95), rgba(255,255,255,0.98))',
-    'linear(to-b, rgba(26,32,44,0.95), rgba(26,32,44,0.98))'
-  );
 
   const glassEffect = {
     backdropFilter: 'blur(20px) saturate(180%)',
@@ -148,7 +101,7 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
                 bgClip="text"
                 letterSpacing="-0.5px"
               >
-                دعم
+                دعم Admin
               </Text>
             </HStack>
           )}
@@ -206,13 +159,11 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
               <Box position="relative">
                 <Avatar
                   size={isOpen ? 'md' : 'sm'}
-                  name={user.name}
-                  src={user.avatar}
+                  name="Admin"
+                  bg="brand.primary"
                   border="3px solid"
-                  borderColor={userRole === 'Contractor' ? 'brand.primary' : 'brand.accent'}
-                  boxShadow={userRole === 'Contractor' 
-                    ? '0 0 20px rgba(30, 58, 138, 0.4)' 
-                    : '0 0 20px rgba(245, 158, 11, 0.4)'}
+                  borderColor="brand.primary"
+                  boxShadow="0 0 20px rgba(30, 58, 138, 0.4)"
                 />
                 <Box
                   position="absolute"
@@ -236,21 +187,21 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
                   transition="opacity 0.3s"
                 >
                   <Text fontSize="sm" fontWeight="700" color="gray.800" noOfLines={1}>
-                    {user.name}
+                    Admin
                   </Text>
                   <Text fontSize="xs" color="gray.500" noOfLines={1}>
-                    {user.company}
+                    DANAAM Platform
                   </Text>
                   <Badge
                     mt={1}
-                    colorScheme={userRole === 'Contractor' ? 'blue' : 'orange'}
+                    colorScheme="purple"
                     fontSize="10px"
                     px={2}
                     py={0.5}
                     borderRadius="6px"
                     fontWeight="600"
                   >
-                    {userRole === 'Contractor' ? 'مقاول' : 'مورد'}
+                    Administrator
                   </Badge>
                 </VStack>
               )}
@@ -270,18 +221,18 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
               borderRadius="10px"
               _hover={{ bg: 'rgba(30, 58, 138, 0.08)' }}
               fontWeight="500"
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate('/admin/profile')}
             >
-              الملف الشخصي
+              Profile
             </MenuItem>
             <MenuItem
               icon={<Settings size={16} />}
               borderRadius="10px"
               _hover={{ bg: 'rgba(30, 58, 138, 0.08)' }}
               fontWeight="500"
-              onClick={() => navigate('/settings')}
+              onClick={() => navigate('/admin/settings')}
             >
-              الإعدادات
+              Settings
             </MenuItem>
             <MenuDivider />
             <MenuItem
@@ -292,7 +243,7 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
               fontWeight="600"
               onClick={() => logout()}
             >
-              تسجيل الخروج
+              Logout
             </MenuItem>
           </MenuList>
         </Menu>
@@ -360,19 +311,15 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
                       onMouseEnter={() => setHoveredItem(item.path)}
                       onMouseLeave={() => setHoveredItem(null)}
                       bg={isActive 
-                        ? userRole === 'Contractor'
-                          ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(30, 58, 138, 0.08) 100%)'
-                          : 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%)'
+                        ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(30, 58, 138, 0.08) 100%)'
                         : 'transparent'
                       }
-                      color={isActive ? (userRole === 'Contractor' ? 'brand.primary' : 'brand.accent') : 'gray.600'}
+                      color={isActive ? 'brand.primary' : 'gray.600'}
                       transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                       transform={hoveredItem === item.path ? 'translateX(-4px) scale(1.02)' : 'translateX(0) scale(1)'}
                       _hover={{
                         bg: isActive
-                          ? userRole === 'Contractor'
-                            ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(30, 58, 138, 0.12) 100%)'
-                            : 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.12) 100%)'
+                          ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(30, 58, 138, 0.12) 100%)'
                           : 'rgba(0, 0, 0, 0.04)',
                         boxShadow: isActive 
                           ? '0 4px 16px rgba(30, 58, 138, 0.15)' 
@@ -388,12 +335,10 @@ const Sidebar = ({ isOpen, userRole, onToggle }: SidebarProps) => {
                           top="0"
                           bottom="0"
                           w="4px"
-                          bg={userRole === 'Contractor' ? 'brand.primary' : 'brand.accent'}
+                          bg="brand.primary"
                           borderTopLeftRadius="4px"
                           borderBottomLeftRadius="4px"
-                          boxShadow={userRole === 'Contractor' 
-                            ? '0 0 12px rgba(30, 58, 138, 0.6)' 
-                            : '0 0 12px rgba(245, 158, 11, 0.6)'}
+                          boxShadow="0 0 12px rgba(30, 58, 138, 0.6)"
                         />
                       )}
 

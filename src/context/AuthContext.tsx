@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { login as loginAPI, refreshToken as refreshTokenAPI } from '../api/auth';
 import apiClient from '../api/client';
-import { User, LoginResponse, AuthContextType } from '../types';
+import { User, AdminLoginResponse, AuthContextType } from '../types';
 import { AxiosError } from 'axios';
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -28,20 +28,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const accessToken = localStorage.getItem('accessToken');
       const refreshToken = localStorage.getItem('refreshToken');
       const userId = localStorage.getItem('userId');
-      const userRole = localStorage.getItem('userRole') as 'Contractor' | 'Supplier' | null;
-      const userClass = localStorage.getItem('userClass');
-      const firstName = localStorage.getItem('firstName');
-      const lastName = localStorage.getItem('lastName');
-      const companyName = localStorage.getItem('companyName');
 
-      if (accessToken && refreshToken && userId && userRole) {
+      if (accessToken && refreshToken && userId) {
         setUser({
           id: userId,
-          role: userRole,
-          userClass: userClass || '',
-          firstName: firstName || '',
-          lastName: lastName || '',
-          companyName: companyName || '',
+          role: 'Admin',
           accessToken,
           refreshToken,
         });
@@ -78,11 +69,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             // Try to refresh the token
             const response = await refreshTokenAPI(userId, refreshToken);
             const newAccessToken = response.accessToken;
-            const newRefreshToken = response.refreshToken;
 
-            // Update tokens in localStorage
+            // Update access token in localStorage
             localStorage.setItem('accessToken', newAccessToken);
-            localStorage.setItem('refreshToken', newRefreshToken);
 
             // Update user state
             setUser((prev) => {
@@ -90,7 +79,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               return {
                 ...prev,
                 accessToken: newAccessToken,
-                refreshToken: newRefreshToken,
               };
             });
 
@@ -121,33 +109,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     email: string,
     password: string,
     keepLoggedIn: boolean = false
-  ): Promise<LoginResponse> => {
+  ): Promise<AdminLoginResponse> => {
     try {
       const response = await loginAPI(email, password, keepLoggedIn);
       
-      // API returns: accessToken, refreshToken, userId, userClass, firstName, lastName, companyName
-      const { accessToken, refreshToken, userId, userClass, firstName, lastName, companyName } = response;
-      
-      // Map userClass to role for routing
-      // userClass can be "Contractors or Suppliers" or just "Contractors" or "Suppliers"
-      let role: 'Contractor' | 'Supplier' = 'Contractor'; // default
-      if (userClass) {
-        if (userClass.includes('Supplier')) {
-          role = 'Supplier';
-        } else if (userClass.includes('Contractor')) {
-          role = 'Contractor';
-        }
-      }
+      // API returns: accessToken, refreshToken, userId
+      const { accessToken, refreshToken, userId } = response;
 
       // Save to localStorage
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('userId', userId);
-      localStorage.setItem('userRole', role);
-      localStorage.setItem('userClass', userClass || '');
-      localStorage.setItem('firstName', firstName || '');
-      localStorage.setItem('lastName', lastName || '');
-      localStorage.setItem('companyName', companyName || '');
 
       // Set authorization header
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
@@ -155,11 +127,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Update state
       setUser({
         id: userId,
-        role,
-        userClass: userClass || '',
-        firstName: firstName || '',
-        lastName: lastName || '',
-        companyName: companyName || '',
+        role: 'Admin',
         accessToken,
         refreshToken,
       });
@@ -175,11 +143,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userId');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userClass');
-    localStorage.removeItem('firstName');
-    localStorage.removeItem('lastName');
-    localStorage.removeItem('companyName');
 
     // Clear authorization header
     delete apiClient.defaults.headers.common['Authorization'];
