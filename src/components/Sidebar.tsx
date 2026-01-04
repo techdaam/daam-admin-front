@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -48,14 +49,15 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Admin navigation items
   const adminNavItems: NavItem[] = [
-    { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard, group: 'main' },
-    { name: 'Registration Requests', path: '/admin/registration-requests', icon: FileText, group: 'main' },
-    { name: 'Users', path: '/admin/users', icon: Users, group: 'main' },
-    { name: 'Orders', path: '/admin/orders', icon: Package, group: 'main' },
-    { name: 'Settings', path: '/admin/settings', icon: Settings, group: 'other' },
+    { name: t('admin.dashboard.title'), path: '/admin/dashboard', icon: LayoutDashboard, group: 'main' },
+    { name: t('admin.registrationRequests.title'), path: '/admin/registration-requests', icon: FileText, group: 'main' },
+    { name: t('admin.users.title'), path: '/admin/users', icon: Users, group: 'main' },
+    { name: t('admin.orders.title'), path: '/admin/orders', icon: Package, group: 'main' },
+    { name: t('common.settings'), path: '/admin/settings', icon: Settings, group: 'other' },
   ];
 
   const navItems = adminNavItems;
@@ -187,10 +189,10 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                   transition="opacity 0.3s"
                 >
                   <Text fontSize="sm" fontWeight="700" color="gray.800" noOfLines={1}>
-                    Admin
+                    {t('common.admin') || 'Admin'}
                   </Text>
                   <Text fontSize="xs" color="gray.500" noOfLines={1}>
-                    DANAAM Platform
+                    {t('common.platformName')}
                   </Text>
                   <Badge
                     mt={1}
@@ -201,7 +203,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                     borderRadius="6px"
                     fontWeight="600"
                   >
-                    Administrator
+                    {t('common.administrator') || 'Administrator'}
                   </Badge>
                 </VStack>
               )}
@@ -223,7 +225,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
               fontWeight="500"
               onClick={() => navigate('/admin/profile')}
             >
-              Profile
+              {t('profile.title')}
             </MenuItem>
             <MenuItem
               icon={<Settings size={16} />}
@@ -232,7 +234,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
               fontWeight="500"
               onClick={() => navigate('/admin/settings')}
             >
-              Settings
+              {t('common.settings')}
             </MenuItem>
             <MenuDivider />
             <MenuItem
@@ -243,7 +245,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
               fontWeight="600"
               onClick={() => logout()}
             >
-              Logout
+              {t('common.logout') || 'Logout'}
             </MenuItem>
           </MenuList>
         </Menu>

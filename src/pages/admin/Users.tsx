@@ -86,8 +86,8 @@ const Users = () => {
       setProcessing(userId);
       await activateUser(userId);
       toast({
-        title: 'Success',
-        description: 'User activated successfully',
+        title: t('common.success'),
+        description: t('admin.users.userActivated'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -111,8 +111,8 @@ const Users = () => {
       setProcessing(userId);
       await deactivateUser(userId);
       toast({
-        title: 'Success',
-        description: 'User deactivated successfully',
+        title: t('common.success'),
+        description: t('admin.users.userDeactivated'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -132,7 +132,7 @@ const Users = () => {
   };
 
   const handleDelete = async (userId: string) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) {
+    if (!window.confirm(t('admin.users.confirmDelete'))) {
       return;
     }
 
@@ -140,8 +140,8 @@ const Users = () => {
       setProcessing(userId);
       await deleteUser(userId);
       toast({
-        title: 'Success',
-        description: 'User deleted successfully',
+        title: t('common.success'),
+        description: t('admin.users.userDeleted'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -193,10 +193,10 @@ const Users = () => {
             <Flex justify="space-between" align="center">
               <Box>
                 <Heading size="xl" mb={2}>
-                  Users Management
+                  {t('admin.users.title')}
                 </Heading>
                 <Text fontSize="lg" opacity={0.9}>
-                  Manage all registered users in the system
+                  {t('admin.users.subtitle')}
                 </Text>
               </Box>
               <Box
@@ -229,21 +229,21 @@ const Users = () => {
                 <Text fontSize="3xl" fontWeight="bold" color="blue.600">
                   {users.length}
                 </Text>
-                <Text fontSize="sm" color="gray.600">Total Users</Text>
+                <Text fontSize="sm" color="gray.600">{t('admin.users.totalUsers')}</Text>
               </VStack>
               <Box h="50px" w="1px" bg="gray.200" />
               <VStack>
                 <Text fontSize="3xl" fontWeight="bold" color="green.600">
                   {users.filter(u => u.enabled).length}
                 </Text>
-                <Text fontSize="sm" color="gray.600">Active</Text>
+                <Text fontSize="sm" color="gray.600">{t('admin.users.active')}</Text>
               </VStack>
               <Box h="50px" w="1px" bg="gray.200" />
               <VStack>
                 <Text fontSize="3xl" fontWeight="bold" color="red.600">
                   {users.filter(u => !u.enabled).length}
                 </Text>
-                <Text fontSize="sm" color="gray.600">Inactive</Text>
+                <Text fontSize="sm" color="gray.600">{t('admin.users.inactive')}</Text>
               </VStack>
             </HStack>
           </CardBody>
@@ -260,7 +260,7 @@ const Users = () => {
                       <Icon as={Search} color="gray.400" />
                     </InputLeftElement>
                     <Input
-                      placeholder="Search by email"
+                      placeholder={t('admin.users.searchByEmail')}
                       value={searchFilter}
                       onChange={(e) => setSearchFilter(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -276,7 +276,7 @@ const Users = () => {
                     px={8}
                     borderRadius="lg"
                   >
-                    Search
+                    {t('admin.users.search')}
                   </Button>
 
                   <Button
@@ -288,7 +288,7 @@ const Users = () => {
                     }}
                     borderRadius="lg"
                   >
-                    Clear
+                    {t('admin.users.clear')}
                   </Button>
                 </HStack>
 
@@ -298,7 +298,7 @@ const Users = () => {
                   onClick={onFilterToggle}
                   borderRadius="lg"
                 >
-                  Filters
+                  {t('admin.users.filters')}
                 </Button>
               </Flex>
 
@@ -326,13 +326,13 @@ const Users = () => {
               <Table variant="simple">
                 <Thead bg="gray.50" borderBottom="2px solid" borderColor="gray.200">
                   <Tr>
-                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">User</Th>
-                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Company</Th>
-                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">City</Th>
-                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">User Class</Th>
-                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Status</Th>
-                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Created At</Th>
-                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Actions</Th>
+                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.users.user')}</Th>
+                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.users.company')}</Th>
+                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.users.city')}</Th>
+                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.users.userClass')}</Th>
+                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.users.status')}</Th>
+                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.users.createdAt')}</Th>
+                    <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.users.actions')}</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -395,7 +395,7 @@ const Users = () => {
                             fontSize="xs"
                             fontWeight="semibold"
                           >
-                            Active
+                            {t('admin.users.active')}
                           </Badge>
                         ) : (
                           <Badge
@@ -406,7 +406,7 @@ const Users = () => {
                             fontSize="xs"
                             fontWeight="semibold"
                           >
-                            Inactive
+                            {t('admin.users.inactive')}
                           </Badge>
                         )}
                       </Td>
@@ -434,7 +434,7 @@ const Users = () => {
                                 onClick={() => handleDeactivate(user.id)}
                                 _hover={{ bg: 'orange.50', color: 'orange.700' }}
                               >
-                                Deactivate
+                                {t('admin.users.deactivate')}
                               </MenuItem>
                             ) : (
                               <MenuItem
@@ -442,7 +442,7 @@ const Users = () => {
                                 onClick={() => handleActivate(user.id)}
                                 _hover={{ bg: 'green.50', color: 'green.700' }}
                               >
-                                Activate
+                                {t('admin.users.activate')}
                               </MenuItem>
                             )}
                             <MenuItem
@@ -451,7 +451,7 @@ const Users = () => {
                               color="red.500"
                               _hover={{ bg: 'red.50', color: 'red.700' }}
                             >
-                              Delete
+                              {t('admin.users.delete')}
                             </MenuItem>
                           </MenuList>
                         </Menu>
@@ -472,9 +472,9 @@ const Users = () => {
                   >
                     <Icon as={UsersIcon} boxSize={12} color="gray.400" />
                   </Box>
-                  <Heading size="md" color="gray.600">No Users Found</Heading>
+                  <Heading size="md" color="gray.600">{t('admin.users.noUsersFound')}</Heading>
                   <Text color="gray.500" maxW="md">
-                    There are no users matching your search criteria. Try adjusting your filters.
+                    {t('admin.users.noUsersDesc')}
                   </Text>
                 </VStack>
               </Box>
@@ -495,7 +495,7 @@ const Users = () => {
                   variant="outline"
                   borderRadius="lg"
                 >
-                  Previous
+                  {t('admin.users.previous')}
                 </Button>
                 <HStack spacing={2}>
                   {[...Array(totalPages)].map((_, i) => (
@@ -520,7 +520,7 @@ const Users = () => {
                   variant="outline"
                   borderRadius="lg"
                 >
-                  Next
+                  {t('admin.users.next')}
                 </Button>
               </HStack>
             </CardBody>

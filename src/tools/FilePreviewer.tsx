@@ -27,6 +27,7 @@ import {
   Maximize,
   Minimize,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // Modern Worker Configuration (Optimized for Vite/Webpack)
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -43,6 +44,7 @@ interface CustomPDFViewerProps {
 }
 
 const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
+  const { t } = useTranslation();
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +67,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
 
   const onDocumentLoadError = (err: Error) => {
     console.error('PDF Load Error:', err);
-    setError('Failed to load PDF. Please check your connection or document permissions.');
+    setError(t('pdfViewer.loadError'));
   };
 
   const handleZoomIn = () => {
@@ -98,8 +100,8 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
     } else {
       setPageInput(pageNumber.toString());
       toast({
-        title: 'Invalid page number',
-        description: `Please enter a number between 1 and ${numPages}`,
+        title: t('pdfViewer.invalidPage'),
+        description: t('pdfViewer.pageRangeError', { max: numPages }),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -116,7 +118,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
       link.click();
       document.body.removeChild(link);
       toast({
-        title: 'Download started',
+        title: t('pdfViewer.downloadStarted'),
         status: 'success',
         duration: 2000,
         isClosable: true,
@@ -133,7 +135,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
       <Box p={8} textAlign="center">
         <Alert status="info" borderRadius="lg">
           <AlertIcon />
-          <AlertDescription>No document provided.</AlertDescription>
+          <AlertDescription>{t('pdfViewer.noDocument')}</AlertDescription>
         </Alert>
       </Box>
     );
@@ -166,9 +168,9 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
       >
         {/* Left Controls */}
         <HStack spacing={2}>
-          <Tooltip label="Zoom Out">
+          <Tooltip label={t('pdfViewer.zoomOut')}>
             <IconButton
-              aria-label="Zoom out"
+              aria-label={t('pdfViewer.zoomOut')}
               icon={<ZoomOut size={18} />}
               onClick={handleZoomOut}
               isDisabled={scale <= 0.5}
@@ -187,9 +189,9 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
           >
             {Math.round(scale * 100)}%
           </Badge>
-          <Tooltip label="Zoom In">
+          <Tooltip label={t('pdfViewer.zoomIn')}>
             <IconButton
-              aria-label="Zoom in"
+              aria-label={t('pdfViewer.zoomIn')}
               icon={<ZoomIn size={18} />}
               onClick={handleZoomIn}
               isDisabled={scale >= 3.0}
@@ -201,9 +203,9 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
 
           <Box w="1px" h="30px" bg="gray.300" mx={2} />
 
-          <Tooltip label="Rotate 90°">
+          <Tooltip label={t('pdfViewer.rotate')}>
             <IconButton
-              aria-label="Rotate"
+              aria-label={t('pdfViewer.rotate')}
               icon={<RotateCw size={18} />}
               onClick={handleRotate}
               size="sm"
@@ -216,9 +218,9 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
         {/* Center - Page Navigation */}
         {numPages && (
           <HStack spacing={3}>
-            <Tooltip label="Previous Page">
+            <Tooltip label={t('pdfViewer.previousPage')}>
               <IconButton
-                aria-label="Previous page"
+                aria-label={t('pdfViewer.previousPage')}
                 icon={<ChevronLeft size={18} />}
                 onClick={() => handlePageChange(pageNumber - 1)}
                 isDisabled={pageNumber <= 1}
@@ -245,9 +247,9 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
               </Text>
             </HStack>
 
-            <Tooltip label="Next Page">
+            <Tooltip label={t('pdfViewer.nextPage')}>
               <IconButton
-                aria-label="Next page"
+                aria-label={t('pdfViewer.nextPage')}
                 icon={<ChevronRight size={18} />}
                 onClick={() => handlePageChange(pageNumber + 1)}
                 isDisabled={pageNumber >= (numPages || 0)}
@@ -261,7 +263,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
 
         {/* Right Controls */}
         <HStack spacing={2}>
-          <Tooltip label="Download PDF">
+          <Tooltip label={t('pdfViewer.download')}>
             <Button
               leftIcon={<Download size={18} />}
               onClick={handleDownload}
@@ -269,13 +271,13 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
               colorScheme="green"
               variant="outline"
             >
-              Download
+              {t('pdfViewer.download')}
             </Button>
           </Tooltip>
 
-          <Tooltip label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
+          <Tooltip label={isFullscreen ? t('pdfViewer.exitFullscreen') : t('pdfViewer.fullscreen')}>
             <IconButton
-              aria-label="Toggle fullscreen"
+              aria-label={t('pdfViewer.toggleFullscreen')}
               icon={isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
               onClick={toggleFullscreen}
               size="sm"
@@ -329,7 +331,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
                   size="xl"
                 />
                 <Text color="gray.600" fontWeight="medium">
-                  Loading document...
+                  {t('pdfViewer.loading')}
                 </Text>
               </VStack>
             }
@@ -360,14 +362,14 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
         >
           <HStack spacing={4} fontSize="sm" color="gray.600">
             <HStack>
-              <Text fontWeight="medium">Page:</Text>
+              <Text fontWeight="medium">{t('pdfViewer.page')}:</Text>
               <Badge colorScheme="blue" px={2} py={1} borderRadius="md">
                 {pageNumber} / {numPages}
               </Badge>
             </HStack>
             <Box w="1px" h="20px" bg="gray.300" />
             <HStack>
-              <Text fontWeight="medium">Zoom:</Text>
+              <Text fontWeight="medium">{t('pdfViewer.zoom')}:</Text>
               <Badge colorScheme="green" px={2} py={1} borderRadius="md">
                 {Math.round(scale * 100)}%
               </Badge>
@@ -376,7 +378,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
               <>
                 <Box w="1px" h="20px" bg="gray.300" />
                 <HStack>
-                  <Text fontWeight="medium">Rotation:</Text>
+                  <Text fontWeight="medium">{t('pdfViewer.rotation')}:</Text>
                   <Badge colorScheme="purple" px={2} py={1} borderRadius="md">
                     {rotation}°
                   </Badge>

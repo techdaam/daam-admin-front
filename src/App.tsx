@@ -13,6 +13,7 @@ import RegistrationRequests from './pages/admin/RegistrationRequests';
 import RegistrationRequestDetail from './pages/admin/RegistrationRequestDetail';
 import Users from './pages/admin/Users';
 import Orders from './pages/admin/Orders';
+import Settings from './pages/admin/Settings';
 
 // Placeholder components for routes not yet implemented
 interface PlaceholderPageProps {
@@ -72,7 +73,7 @@ function AppRoutes() {
         <Route path="registration-requests/:id" element={<RegistrationRequestDetail />} />
         <Route path="users" element={<Users />} />
         <Route path="orders" element={<Orders />} />
-        <Route path="settings" element={<PlaceholderPage title="Admin Settings" />} />
+        <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<PlaceholderPage title="Admin Profile" />} />
       </Route>
 

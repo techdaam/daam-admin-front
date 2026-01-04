@@ -14,33 +14,36 @@ import {
 } from '@chakra-ui/react';
 import { Package, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const MotionCard = motion(Card);
 
 const Orders = () => {
+  const { t } = useTranslation();
+
   const features = [
     {
       icon: Package,
-      title: 'Order Management',
-      description: 'Track and manage all orders from one central location',
+      title: t('admin.orders.orderManagement'),
+      description: t('admin.orders.orderManagementDesc'),
       color: 'blue',
     },
     {
       icon: TrendingUp,
-      title: 'Analytics & Reports',
-      description: 'Get insights into order trends and performance metrics',
+      title: t('admin.orders.analyticsReports'),
+      description: t('admin.orders.analyticsReportsDesc'),
       color: 'green',
     },
     {
       icon: Clock,
-      title: 'Real-time Updates',
-      description: 'Monitor order status changes in real-time',
+      title: t('admin.orders.realtimeUpdates'),
+      description: t('admin.orders.realtimeUpdatesDesc'),
       color: 'orange',
     },
     {
       icon: CheckCircle,
-      title: 'Order Fulfillment',
-      description: 'Streamline order processing and fulfillment',
+      title: t('admin.orders.orderFulfillment'),
+      description: t('admin.orders.orderFulfillmentDesc'),
       color: 'purple',
     },
   ];
@@ -61,10 +64,10 @@ const Orders = () => {
             <Flex justify="space-between" align="center">
               <Box>
                 <Heading size="xl" mb={2}>
-                  Orders Management
+                  {t('admin.orders.title')}
                 </Heading>
                 <Text fontSize="lg" opacity={0.9}>
-                  Comprehensive order tracking and management system
+                  {t('admin.orders.subtitle')}
                 </Text>
               </Box>
               <Box
@@ -103,17 +106,16 @@ const Orders = () => {
                 <Icon as={Package} boxSize={20} color="blue.500" />
               </Box>
               <Heading size="xl" color="gray.700" textAlign="center">
-                Orders Management
+                {t('admin.orders.comingSoon')}
               </Heading>
               <Text color="gray.600" textAlign="center" maxW="2xl" fontSize="lg">
-                Our comprehensive orders management system is currently under development. 
-                This powerful tool will help you track, manage, and analyze all orders seamlessly.
+                {t('admin.orders.description')}
               </Text>
 
               {/* Features Grid */}
               <Box w="full" pt={8}>
                 <Heading size="md" mb={6} color="brand.primary" textAlign="center">
-                  Upcoming Features
+                  {t('admin.orders.upcomingFeatures')}
                 </Heading>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                   {features.map((feature, index) => (
@@ -171,15 +173,14 @@ const Orders = () => {
                     animation="pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite"
                   />
                   <Text color="blue.700" fontWeight="semibold" fontSize="sm">
-                    Development in Progress
+                    {t('admin.orders.developmentInProgress')}
                   </Text>
                 </HStack>
               </Box>
 
               {/* CTA */}
               <Text color="gray.500" fontSize="sm" textAlign="center" maxW="md" mt={4}>
-                Stay tuned for updates! This feature will be available soon with powerful 
-                order management capabilities.
+                {t('admin.orders.stayTuned')}
               </Text>
             </VStack>
           </CardBody>
@@ -189,7 +190,7 @@ const Orders = () => {
         <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
           <CardBody p={8}>
             <Heading size="md" mb={6} color="brand.primary">
-              What to Expect
+              {t('admin.orders.whatToExpect')}
             </Heading>
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
               <Box
@@ -201,13 +202,13 @@ const Orders = () => {
               >
                 <VStack align="start" spacing={3}>
                   <Text fontSize="3xl" fontWeight="bold" color="blue.600">
-                    Real-time
+                    {t('admin.orders.realtime')}
                   </Text>
                   <Text color="blue.700" fontWeight="medium">
-                    Order Tracking
+                    {t('admin.orders.orderTracking')}
                   </Text>
                   <Text fontSize="sm" color="blue.600">
-                    Monitor orders as they happen
+                    {t('admin.orders.monitorOrders')}
                   </Text>
                 </VStack>
               </Box>
@@ -221,13 +222,13 @@ const Orders = () => {
               >
                 <VStack align="start" spacing={3}>
                   <Text fontSize="3xl" fontWeight="bold" color="green.600">
-                    Advanced
+                    {t('admin.orders.advanced')}
                   </Text>
                   <Text color="green.700" fontWeight="medium">
-                    Filtering & Search
+                    {t('admin.orders.filteringSearch')}
                   </Text>
                   <Text fontSize="sm" color="green.600">
-                    Find any order instantly
+                    {t('admin.orders.findAnyOrder')}
                   </Text>
                 </VStack>
               </Box>
@@ -241,13 +242,13 @@ const Orders = () => {
               >
                 <VStack align="start" spacing={3}>
                   <Text fontSize="3xl" fontWeight="bold" color="purple.600">
-                    Detailed
+                    {t('admin.orders.detailed')}
                   </Text>
                   <Text color="purple.700" fontWeight="medium">
-                    Analytics Dashboard
+                    {t('admin.orders.analyticsDashboard')}
                   </Text>
                   <Text fontSize="sm" color="purple.600">
-                    Insights at your fingertips
+                    {t('admin.orders.insightsAtFingertips')}
                   </Text>
                 </VStack>
               </Box>

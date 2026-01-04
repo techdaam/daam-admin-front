@@ -82,47 +82,47 @@ const AdminDashboard = () => {
 
   const statCards = [
     {
-      label: 'Total Users',
+      label: t('admin.dashboard.totalUsers'),
       value: stats.totalUsers,
       icon: Users,
       color: 'blue',
       gradient: 'linear(to-br, blue.400, blue.600)',
-      helpText: '+12% from last month',
+      helpText: `+12% ${t('admin.dashboard.lastMonth')}`,
       change: '+12%',
     },
     {
-      label: 'Pending Requests',
+      label: t('admin.dashboard.pendingRequests'),
       value: stats.pendingRequests,
       icon: FileText,
       color: 'orange',
       gradient: 'linear(to-br, orange.400, orange.600)',
-      helpText: 'Awaiting approval',
+      helpText: t('admin.dashboard.awaitingApproval'),
       change: '+5',
     },
     {
-      label: 'Total Orders',
+      label: t('admin.dashboard.totalOrders'),
       value: stats.totalOrders,
       icon: Package,
       color: 'green',
       gradient: 'linear(to-br, green.400, green.600)',
-      helpText: '+8% from last month',
+      helpText: `+8% ${t('admin.dashboard.lastMonth')}`,
       change: '+8%',
     },
     {
-      label: 'Active Users',
+      label: t('admin.dashboard.activeUsers'),
       value: stats.activeUsers,
       icon: TrendingUp,
       color: 'purple',
       gradient: 'linear(to-br, purple.400, purple.600)',
-      helpText: 'Currently online',
+      helpText: t('admin.dashboard.currentlyOnline'),
       change: '890',
     },
   ];
 
   const quickActions = [
     {
-      title: 'Review Registration Requests',
-      description: 'Approve or deny pending registrations',
+      title: t('admin.dashboard.reviewRegistrations'),
+      description: t('admin.dashboard.reviewRegistrationsDesc'),
       icon: FileText,
       color: 'blue',
       gradient: 'linear(to-br, blue.50, blue.100)',
@@ -130,8 +130,8 @@ const AdminDashboard = () => {
       onClick: () => navigate('/admin/registration-requests'),
     },
     {
-      title: 'Manage Users',
-      description: 'View and manage all users',
+      title: t('admin.dashboard.manageUsers'),
+      description: t('admin.dashboard.manageUsersDesc'),
       icon: Users,
       color: 'green',
       gradient: 'linear(to-br, green.50, green.100)',
@@ -139,8 +139,8 @@ const AdminDashboard = () => {
       onClick: () => navigate('/admin/users'),
     },
     {
-      title: 'View Orders',
-      description: 'Track and manage orders',
+      title: t('admin.dashboard.viewOrders'),
+      description: t('admin.dashboard.viewOrdersDesc'),
       icon: Package,
       color: 'purple',
       gradient: 'linear(to-br, purple.50, purple.100)',
@@ -163,10 +163,10 @@ const AdminDashboard = () => {
         >
           <Box position="relative" zIndex={1}>
             <Heading size="xl" mb={2}>
-              Admin Dashboard
+              {t('admin.dashboard.title')}
             </Heading>
             <Text fontSize="lg" opacity={0.9}>
-              Welcome to the DANAAM Admin Panel
+              {t('admin.dashboard.welcome')}
             </Text>
           </Box>
           <Box
@@ -246,7 +246,7 @@ const AdminDashboard = () => {
         <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
           <CardBody p={8}>
             <Heading size="md" mb={6} color="brand.primary">
-              Quick Actions
+              {t('admin.dashboard.quickActions')}
             </Heading>
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
               {quickActions.map((action, index) => (
@@ -297,7 +297,7 @@ const AdminDashboard = () => {
         <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
           <CardBody p={8}>
             <Heading size="md" mb={6} color="brand.primary">
-              Recent Activity
+              {t('admin.dashboard.recentActivity')}
             </Heading>
             <VStack spacing={4} align="stretch">
               <Box
@@ -310,13 +310,13 @@ const AdminDashboard = () => {
                 <HStack justify="space-between">
                   <VStack align="start" spacing={1}>
                     <Text fontWeight="semibold" color="gray.800">
-                      New registration request
+                      {t('admin.dashboard.newRegistrationRequest')}
                     </Text>
                     <Text fontSize="sm" color="gray.600">
                       ABC Construction Company
                     </Text>
                   </VStack>
-                  <Text fontSize="sm" color="gray.500">2 hours ago</Text>
+                  <Text fontSize="sm" color="gray.500">{t('admin.dashboard.hoursAgo', { hours: 2 })}</Text>
                 </HStack>
               </Box>
               <Box
@@ -329,13 +329,13 @@ const AdminDashboard = () => {
                 <HStack justify="space-between">
                   <VStack align="start" spacing={1}>
                     <Text fontWeight="semibold" color="gray.800">
-                      User activated
+                      {t('admin.dashboard.userActivated')}
                     </Text>
                     <Text fontSize="sm" color="gray.600">
                       john.doe@example.com
                     </Text>
                   </VStack>
-                  <Text fontSize="sm" color="gray.500">5 hours ago</Text>
+                  <Text fontSize="sm" color="gray.500">{t('admin.dashboard.hoursAgo', { hours: 5 })}</Text>
                 </HStack>
               </Box>
               <Box
@@ -348,13 +348,13 @@ const AdminDashboard = () => {
                 <HStack justify="space-between">
                   <VStack align="start" spacing={1}>
                     <Text fontWeight="semibold" color="gray.800">
-                      New order created
+                      {t('admin.dashboard.newOrderCreated')}
                     </Text>
                     <Text fontSize="sm" color="gray.600">
                       Order #12345
                     </Text>
                   </VStack>
-                  <Text fontSize="sm" color="gray.500">1 day ago</Text>
+                  <Text fontSize="sm" color="gray.500">{t('admin.dashboard.daysAgo', { days: 1 })}</Text>
                 </HStack>
               </Box>
             </VStack>
