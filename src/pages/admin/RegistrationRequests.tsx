@@ -104,11 +104,11 @@ const RegistrationRequests = () => {
   const getStatusBadge = (status: RegistrationStatus) => {
     switch (status) {
       case RegistrationStatus.Requested:
-        return <Badge colorScheme="yellow" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">Requested</Badge>;
+        return <Badge colorScheme="yellow" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.requested')}</Badge>;
       case RegistrationStatus.Accepted:
-        return <Badge colorScheme="green" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">Accepted</Badge>;
+        return <Badge colorScheme="green" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.accepted')}</Badge>;
       case RegistrationStatus.Declined:
-        return <Badge colorScheme="red" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">Declined</Badge>;
+        return <Badge colorScheme="red" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.declined')}</Badge>;
       default:
         return <Badge px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">Unknown</Badge>;
     }
@@ -116,9 +116,9 @@ const RegistrationRequests = () => {
 
   const getTypeBadge = (type: RegisterationType) => {
     if (type === RegisterationType.AsContractors) {
-      return <Badge colorScheme="blue" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">Contractor</Badge>;
+      return <Badge colorScheme="blue" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.contractor')}</Badge>;
     } else {
-      return <Badge colorScheme="orange" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">Supplier</Badge>;
+      return <Badge colorScheme="orange" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.supplier')}</Badge>;
     }
   };
 
@@ -127,8 +127,8 @@ const RegistrationRequests = () => {
       setProcessing(id);
       await approveRegistrationRequest(id);
       toast({
-        title: 'Success',
-        description: 'Registration request approved successfully',
+        title: t('common.success'),
+        description: t('admin.registrationRequests.requestApproved'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -152,8 +152,8 @@ const RegistrationRequests = () => {
       setProcessing(id);
       await denyRegistrationRequest(id);
       toast({
-        title: 'Success',
-        description: 'Registration request declined',
+        title: t('common.success'),
+        description: t('admin.registrationRequests.requestDeclined'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -201,10 +201,10 @@ const RegistrationRequests = () => {
             <Flex justify="space-between" align="center">
               <Box>
                 <Heading size="xl" mb={2}>
-                  Registration Requests
+                  {t('admin.registrationRequests.title')}
                 </Heading>
                 <Text fontSize="lg" opacity={0.9}>
-                  Review and manage registration requests
+                  {t('admin.registrationRequests.subtitle')}
                 </Text>
               </Box>
               <Box
@@ -246,7 +246,7 @@ const RegistrationRequests = () => {
                   <Text fontSize="3xl" fontWeight="bold" color="yellow.600">
                     {activeTab === 0 ? requests.length : '-'}
                   </Text>
-                  <Text fontSize="sm" color="gray.600">Pending Requests</Text>
+                  <Text fontSize="sm" color="gray.600">{t('admin.registrationRequests.pendingRequests')}</Text>
                 </VStack>
               </HStack>
             </CardBody>
@@ -267,7 +267,7 @@ const RegistrationRequests = () => {
                   <Text fontSize="3xl" fontWeight="bold" color="green.600">
                     {activeTab === 1 ? requests.length : '-'}
                   </Text>
-                  <Text fontSize="sm" color="gray.600">Accepted</Text>
+                  <Text fontSize="sm" color="gray.600">{t('admin.registrationRequests.accepted')}</Text>
                 </VStack>
               </HStack>
             </CardBody>
@@ -288,7 +288,7 @@ const RegistrationRequests = () => {
                   <Text fontSize="3xl" fontWeight="bold" color="red.600">
                     {activeTab === 2 ? requests.length : '-'}
                   </Text>
-                  <Text fontSize="sm" color="gray.600">Declined</Text>
+                  <Text fontSize="sm" color="gray.600">{t('admin.registrationRequests.declined')}</Text>
                 </VStack>
               </HStack>
             </CardBody>
@@ -308,7 +308,7 @@ const RegistrationRequests = () => {
                 >
                   <HStack spacing={2}>
                     <Icon as={Clock} boxSize={4} />
-                    <Text>Pending</Text>
+                    <Text>{t('admin.registrationRequests.pending')}</Text>
                     <Badge colorScheme="yellow" borderRadius="full">
                       {activeTab === 0 ? requests.length : ''}
                     </Badge>
@@ -322,7 +322,7 @@ const RegistrationRequests = () => {
                 >
                   <HStack spacing={2}>
                     <Icon as={CheckCircle} boxSize={4} />
-                    <Text>Accepted</Text>
+                    <Text>{t('admin.registrationRequests.accepted')}</Text>
                     <Badge colorScheme="green" borderRadius="full">
                       {activeTab === 1 ? requests.length : ''}
                     </Badge>
@@ -336,7 +336,7 @@ const RegistrationRequests = () => {
                 >
                   <HStack spacing={2}>
                     <Icon as={XCircle} boxSize={4} />
-                    <Text>Declined</Text>
+                    <Text>{t('admin.registrationRequests.declined')}</Text>
                     <Badge colorScheme="red" borderRadius="full">
                       {activeTab === 2 ? requests.length : ''}
                     </Badge>
@@ -358,7 +358,7 @@ const RegistrationRequests = () => {
                               <Icon as={Search} color="gray.400" />
                             </InputLeftElement>
                             <Input
-                              placeholder="Search by email"
+                              placeholder={t('admin.registrationRequests.searchByEmail')}
                               value={emailFilter}
                               onChange={(e) => setEmailFilter(e.target.value)}
                               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -373,7 +373,7 @@ const RegistrationRequests = () => {
                             px={8}
                             borderRadius="lg"
                           >
-                            Search
+                            {t('admin.registrationRequests.search')}
                           </Button>
 
                           <Button
@@ -385,7 +385,7 @@ const RegistrationRequests = () => {
                             }}
                             borderRadius="lg"
                           >
-                            Clear
+                            {t('admin.registrationRequests.clear')}
                           </Button>
                         </HStack>
                       </CardBody>
@@ -396,14 +396,14 @@ const RegistrationRequests = () => {
                       <Table variant="simple">
                         <Thead bg="gray.50" borderBottom="2px solid" borderColor="gray.200">
                           <Tr>
-                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Company Name</Th>
-                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Email</Th>
-                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Type</Th>
-                            {tabIndex === 0 && <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Status</Th>}
+                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.registrationRequests.companyName')}</Th>
+                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.registrationRequests.email')}</Th>
+                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.registrationRequests.type')}</Th>
+                            {tabIndex === 0 && <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.registrationRequests.status')}</Th>}
                             <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">
-                              {tabIndex === 0 ? 'Created At' : tabIndex === 1 ? 'Accepted At' : 'Declined At'}
+                              {tabIndex === 0 ? t('admin.registrationRequests.createdAt') : tabIndex === 1 ? t('admin.registrationRequests.acceptedAt') : t('admin.registrationRequests.declinedAt')}
                             </Th>
-                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">Actions</Th>
+                            <Th py={4} fontSize="xs" textTransform="uppercase" color="gray.600" fontWeight="bold">{t('admin.registrationRequests.actions')}</Th>
                           </Tr>
                         </Thead>
                         <Tbody>
@@ -437,7 +437,7 @@ const RegistrationRequests = () => {
                                     onClick={() => navigate(`/admin/registration-requests/${request.id}`)}
                                     borderRadius="lg"
                                   >
-                                    View
+                                    {t('admin.registrationRequests.view')}
                                   </Button>
                                   {request.currentStatus === RegistrationStatus.Requested && (
                                     <>
@@ -449,7 +449,7 @@ const RegistrationRequests = () => {
                                         isLoading={processing === request.id}
                                         borderRadius="lg"
                                       >
-                                        Accept
+                                        {t('admin.registrationRequests.accept')}
                                       </Button>
                                       <Button
                                         size="sm"
@@ -459,7 +459,7 @@ const RegistrationRequests = () => {
                                         isLoading={processing === request.id}
                                         borderRadius="lg"
                                       >
-                                        Deny
+                                        {t('admin.registrationRequests.deny')}
                                       </Button>
                                     </>
                                   )}
@@ -476,11 +476,11 @@ const RegistrationRequests = () => {
                             <Box p={6} borderRadius="full" bg="gray.100">
                               <Icon as={FileText} boxSize={12} color="gray.400" />
                             </Box>
-                            <Heading size="md" color="gray.600">No Requests Found</Heading>
+                            <Heading size="md" color="gray.600">{t('admin.registrationRequests.noRequestsFound')}</Heading>
                             <Text color="gray.500" maxW="md">
-                              {tabIndex === 0 && 'No pending registration requests at the moment.'}
-                              {tabIndex === 1 && 'No accepted registration requests found.'}
-                              {tabIndex === 2 && 'No declined registration requests found.'}
+                              {tabIndex === 0 && t('admin.registrationRequests.noPendingRequests')}
+                              {tabIndex === 1 && t('admin.registrationRequests.noAcceptedRequests')}
+                              {tabIndex === 2 && t('admin.registrationRequests.noDeclinedRequests')}
                             </Text>
                           </VStack>
                         </Box>
@@ -506,7 +506,7 @@ const RegistrationRequests = () => {
                   variant="outline"
                   borderRadius="lg"
                 >
-                  Previous
+                  {t('admin.registrationRequests.previous')}
                 </Button>
                 <HStack spacing={2}>
                   {[...Array(Math.min(totalPages, 5))].map((_, i) => {
@@ -534,7 +534,7 @@ const RegistrationRequests = () => {
                   variant="outline"
                   borderRadius="lg"
                 >
-                  Next
+                  {t('admin.registrationRequests.next')}
                 </Button>
               </HStack>
             </CardBody>
