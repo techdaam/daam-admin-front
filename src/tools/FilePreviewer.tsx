@@ -1,14 +1,40 @@
 import React, { useState, useMemo } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import {
+  Box,
+  Button,
+  HStack,
+  VStack,
+  Text,
+  IconButton,
+  Input,
+  Spinner,
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  Flex,
+  useToast,
+  Badge,
+  Tooltip,
+} from '@chakra-ui/react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  RotateCw,
+  Download,
+  Maximize,
+  Minimize,
+} from 'lucide-react';
 
-// 1. Modern Worker Configuration (Optimized for Vite/Webpack in 2026)
-// This uses the .mjs worker to ensure compatibility with modern bundlers.
+// Modern Worker Configuration (Optimized for Vite/Webpack)
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url
 ).toString();
 
-// Optional: Import CSS for standard text layer and annotation styles
+// Import CSS for text layer and annotation styles
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
@@ -20,14 +46,17 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
+  const [scale, setScale] = useState<number>(1.0);
+  const [rotation, setRotation] = useState<number>(0);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [pageInput, setPageInput] = useState<string>('1');
+  const toast = useToast();
 
-  // 2. Memoize the file object
-  // Critical: Prevents the PDF from re-fetching on every component render.
-  const file = useMemo(() => ({ 
+  // Memoize the file object
+  const file = useMemo(() => presignedUrl ? ({ 
     url: presignedUrl,
-    // Add specific S3 headers if your backend doesn't handle them
     withCredentials: false 
-  }), [presignedUrl]);
+  }) : null, [presignedUrl]);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -36,57 +65,328 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ presignedUrl }) => {
 
   const onDocumentLoadError = (err: Error) => {
     console.error('PDF Load Error:', err);
-    setError('Failed to load PDF. Please check your connection or S3 permissions.');
+    setError('Failed to load PDF. Please check your connection or document permissions.');
+  };
+
+  const handleZoomIn = () => {
+    setScale(prev => Math.min(prev + 0.2, 3.0));
+  };
+
+  const handleZoomOut = () => {
+    setScale(prev => Math.max(prev - 0.2, 0.5));
+  };
+
+  const handleRotate = () => {
+    setRotation(prev => (prev + 90) % 360);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= (numPages || 1)) {
+      setPageNumber(newPage);
+      setPageInput(newPage.toString());
+    }
+  };
+
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handlePageInputSubmit = () => {
+    const page = parseInt(pageInput);
+    if (!isNaN(page) && page >= 1 && page <= (numPages || 1)) {
+      setPageNumber(page);
+    } else {
+      setPageInput(pageNumber.toString());
+      toast({
+        title: 'Invalid page number',
+        description: `Please enter a number between 1 and ${numPages}`,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleDownload = () => {
+    if (presignedUrl) {
+      const link = document.createElement('a');
+      link.href = presignedUrl;
+      link.download = 'document.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast({
+        title: 'Download started',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(prev => !prev);
   };
 
   if (!presignedUrl) {
-    return <div className="p-4 text-gray-500">No document provided.</div>;
+    return (
+      <Box p={8} textAlign="center">
+        <Alert status="info" borderRadius="lg">
+          <AlertIcon />
+          <AlertDescription>No document provided.</AlertDescription>
+        </Alert>
+      </Box>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center p-4 bg-gray-100 rounded-lg">
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-
-      <div className="shadow-xl border bg-white overflow-hidden">
-        <Document
-          file={file}
-          onLoadSuccess={onDocumentLoadSuccess}
-          onLoadError={onDocumentLoadError}
-          loading={<p className="p-10">Fetching document...</p>}
-        >
-          <Page 
-            pageNumber={pageNumber} 
-            renderTextLayer={true}
-            renderAnnotationLayer={true}
-            width={600} // Adjust based on your layout
-          />
-        </Document>
-      </div>
-
-      {numPages && (
-        <div className="mt-4 flex items-center gap-4">
-          <button
-            disabled={pageNumber <= 1}
-            onClick={() => setPageNumber(prev => prev - 1)}
-            className="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-gray-400"
+    <VStack
+      spacing={4}
+      w="full"
+      h={isFullscreen ? '100vh' : 'auto'}
+      bg="gray.50"
+      p={4}
+      borderRadius="lg"
+      position={isFullscreen ? 'fixed' : 'relative'}
+      top={isFullscreen ? 0 : 'auto'}
+      left={isFullscreen ? 0 : 'auto'}
+      zIndex={isFullscreen ? 9999 : 'auto'}
+    >
+      {/* Toolbar */}
+      <Flex
+        w="full"
+        justify="space-between"
+        align="center"
+        bg="white"
+        p={4}
+        borderRadius="xl"
+        shadow="md"
+        border="1px solid"
+        borderColor="gray.200"
+      >
+        {/* Left Controls */}
+        <HStack spacing={2}>
+          <Tooltip label="Zoom Out">
+            <IconButton
+              aria-label="Zoom out"
+              icon={<ZoomOut size={18} />}
+              onClick={handleZoomOut}
+              isDisabled={scale <= 0.5}
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+            />
+          </Tooltip>
+          <Badge
+            px={3}
+            py={1}
+            borderRadius="full"
+            colorScheme="blue"
+            fontSize="sm"
+            fontWeight="semibold"
           >
-            Previous
-          </button>
-          
-          <p className="text-sm font-medium">
-            Page {pageNumber} of {numPages}
-          </p>
+            {Math.round(scale * 100)}%
+          </Badge>
+          <Tooltip label="Zoom In">
+            <IconButton
+              aria-label="Zoom in"
+              icon={<ZoomIn size={18} />}
+              onClick={handleZoomIn}
+              isDisabled={scale >= 3.0}
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+            />
+          </Tooltip>
 
-          <button
-            disabled={pageNumber >= (numPages ?? 0)}
-            onClick={() => setPageNumber(prev => prev + 1)}
-            className="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-gray-400"
-          >
-            Next
-          </button>
-        </div>
+          <Box w="1px" h="30px" bg="gray.300" mx={2} />
+
+          <Tooltip label="Rotate 90°">
+            <IconButton
+              aria-label="Rotate"
+              icon={<RotateCw size={18} />}
+              onClick={handleRotate}
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+            />
+          </Tooltip>
+        </HStack>
+
+        {/* Center - Page Navigation */}
+        {numPages && (
+          <HStack spacing={3}>
+            <Tooltip label="Previous Page">
+              <IconButton
+                aria-label="Previous page"
+                icon={<ChevronLeft size={18} />}
+                onClick={() => handlePageChange(pageNumber - 1)}
+                isDisabled={pageNumber <= 1}
+                size="sm"
+                colorScheme="blue"
+                variant="outline"
+              />
+            </Tooltip>
+
+            <HStack spacing={2}>
+              <Input
+                value={pageInput}
+                onChange={handlePageInputChange}
+                onBlur={handlePageInputSubmit}
+                onKeyPress={(e) => e.key === 'Enter' && handlePageInputSubmit()}
+                size="sm"
+                w="50px"
+                textAlign="center"
+                fontWeight="semibold"
+                borderRadius="lg"
+              />
+              <Text fontSize="sm" color="gray.600" fontWeight="medium">
+                / {numPages}
+              </Text>
+            </HStack>
+
+            <Tooltip label="Next Page">
+              <IconButton
+                aria-label="Next page"
+                icon={<ChevronRight size={18} />}
+                onClick={() => handlePageChange(pageNumber + 1)}
+                isDisabled={pageNumber >= (numPages || 0)}
+                size="sm"
+                colorScheme="blue"
+                variant="outline"
+              />
+            </Tooltip>
+          </HStack>
+        )}
+
+        {/* Right Controls */}
+        <HStack spacing={2}>
+          <Tooltip label="Download PDF">
+            <Button
+              leftIcon={<Download size={18} />}
+              onClick={handleDownload}
+              size="sm"
+              colorScheme="green"
+              variant="outline"
+            >
+              Download
+            </Button>
+          </Tooltip>
+
+          <Tooltip label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
+            <IconButton
+              aria-label="Toggle fullscreen"
+              icon={isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+              onClick={toggleFullscreen}
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+            />
+          </Tooltip>
+        </HStack>
+      </Flex>
+
+      {/* Error Display */}
+      {error && (
+        <Alert status="error" borderRadius="lg" shadow="md">
+          <AlertIcon />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
-    </div>
+
+      {/* PDF Document */}
+      <Box
+        flex={1}
+        w="full"
+        overflow="auto"
+        bg="gray.100"
+        borderRadius="xl"
+        border="2px solid"
+        borderColor="gray.200"
+        display="flex"
+        justifyContent="center"
+        alignItems="flex-start"
+        p={4}
+        maxH={isFullscreen ? 'calc(100vh - 120px)' : '70vh'}
+      >
+        <Box
+          shadow="2xl"
+          borderRadius="lg"
+          overflow="hidden"
+          bg="white"
+        >
+          <Document
+            file={file}
+            onLoadSuccess={onDocumentLoadSuccess}
+            onLoadError={onDocumentLoadError}
+            loading={
+              <VStack spacing={4} py={20}>
+                <Spinner
+                  thickness="4px"
+                  speed="0.65s"
+                  emptyColor="gray.200"
+                  color="blue.500"
+                  size="xl"
+                />
+                <Text color="gray.600" fontWeight="medium">
+                  Loading document...
+                </Text>
+              </VStack>
+            }
+          >
+            <Page 
+              pageNumber={pageNumber} 
+              renderTextLayer={true}
+              renderAnnotationLayer={true}
+              scale={scale}
+              rotate={rotation}
+            />
+          </Document>
+        </Box>
+      </Box>
+
+      {/* Bottom Info Bar */}
+      {numPages && (
+        <Flex
+          w="full"
+          justify="center"
+          align="center"
+          bg="white"
+          p={3}
+          borderRadius="xl"
+          shadow="md"
+          border="1px solid"
+          borderColor="gray.200"
+        >
+          <HStack spacing={4} fontSize="sm" color="gray.600">
+            <HStack>
+              <Text fontWeight="medium">Page:</Text>
+              <Badge colorScheme="blue" px={2} py={1} borderRadius="md">
+                {pageNumber} / {numPages}
+              </Badge>
+            </HStack>
+            <Box w="1px" h="20px" bg="gray.300" />
+            <HStack>
+              <Text fontWeight="medium">Zoom:</Text>
+              <Badge colorScheme="green" px={2} py={1} borderRadius="md">
+                {Math.round(scale * 100)}%
+              </Badge>
+            </HStack>
+            {rotation > 0 && (
+              <>
+                <Box w="1px" h="20px" bg="gray.300" />
+                <HStack>
+                  <Text fontWeight="medium">Rotation:</Text>
+                  <Badge colorScheme="purple" px={2} py={1} borderRadius="md">
+                    {rotation}°
+                  </Badge>
+                </HStack>
+              </>
+            )}
+          </HStack>
+        </Flex>
+      )}
+    </VStack>
   );
 };
 
