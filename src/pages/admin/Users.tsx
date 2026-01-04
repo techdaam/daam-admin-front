@@ -180,67 +180,52 @@ const Users = () => {
   return (
     <Container maxW="7xl" py={8}>
       <VStack spacing={6} align="stretch">
-        {/* Header with Gradient */}
+        {/* Header */}
         <Box
-          bgGradient="linear(to-r, brand.primary, blue.600)"
+          bg="brand.primary"
           p={8}
-          borderRadius="2xl"
+          borderRadius="xl"
           color="white"
-          position="relative"
-          overflow="hidden"
         >
-          <Box position="relative" zIndex={1}>
-            <Flex justify="space-between" align="center">
-              <Box>
-                <Heading size="xl" mb={2}>
-                  {t('admin.users.title')}
-                </Heading>
-                <Text fontSize="lg" opacity={0.9}>
-                  {t('admin.users.subtitle')}
-                </Text>
-              </Box>
-              <Box
-                p={4}
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                backdropFilter="blur(10px)"
-              >
-                <Icon as={UsersIcon} boxSize={10} />
-              </Box>
-            </Flex>
-          </Box>
-          <Box
-            position="absolute"
-            top="-50%"
-            right="-10%"
-            w="400px"
-            h="400px"
-            borderRadius="full"
-            bg="whiteAlpha.100"
-            filter="blur(60px)"
-          />
+          <Flex justify="space-between" align="center">
+            <Box>
+              <Heading size="xl" mb={2}>
+                {t('admin.users.title')}
+              </Heading>
+              <Text fontSize="lg" opacity={0.9}>
+                {t('admin.users.subtitle')}
+              </Text>
+            </Box>
+            <Box
+              p={4}
+              borderRadius="lg"
+              bg="whiteAlpha.200"
+            >
+              <Icon as={UsersIcon} boxSize={10} />
+            </Box>
+          </Flex>
         </Box>
 
         {/* Stats Summary */}
-        <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+        <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200">
           <CardBody p={6}>
             <HStack spacing={8} justify="space-around">
               <VStack>
-                <Text fontSize="3xl" fontWeight="bold" color="blue.600">
+                <Text fontSize="3xl" fontWeight="bold" color="gray.800">
                   {users.length}
                 </Text>
                 <Text fontSize="sm" color="gray.600">{t('admin.users.totalUsers')}</Text>
               </VStack>
               <Box h="50px" w="1px" bg="gray.200" />
               <VStack>
-                <Text fontSize="3xl" fontWeight="bold" color="green.600">
+                <Text fontSize="3xl" fontWeight="bold" color="gray.800">
                   {users.filter(u => u.enabled).length}
                 </Text>
                 <Text fontSize="sm" color="gray.600">{t('admin.users.active')}</Text>
               </VStack>
               <Box h="50px" w="1px" bg="gray.200" />
               <VStack>
-                <Text fontSize="3xl" fontWeight="bold" color="red.600">
+                <Text fontSize="3xl" fontWeight="bold" color="gray.800">
                   {users.filter(u => !u.enabled).length}
                 </Text>
                 <Text fontSize="sm" color="gray.600">{t('admin.users.inactive')}</Text>
@@ -250,7 +235,7 @@ const Users = () => {
         </Card>
 
         {/* Filters Section */}
-        <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+        <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200">
           <CardBody p={6}>
             <VStack spacing={4} align="stretch">
               <Flex justify="space-between" align="center">
@@ -320,7 +305,7 @@ const Users = () => {
         </Card>
 
         {/* Table */}
-        <Card shadow="lg" borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="gray.100">
+        <Card shadow="sm" borderRadius="xl" overflow="hidden" border="1px solid" borderColor="gray.200">
           <CardBody p={0}>
             <Box overflowX="auto">
               <Table variant="simple">
@@ -343,7 +328,7 @@ const Users = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.05 }}
-                      _hover={{ bg: 'blue.50' }}
+                      _hover={{ bg: 'gray.50' }}
                       cursor="pointer"
                       borderBottom="1px solid"
                       borderColor="gray.100"
@@ -353,7 +338,7 @@ const Users = () => {
                           <Avatar
                             size="sm"
                             name={`${user.firstName} ${user.lastName}`}
-                            bg="blue.500"
+                            bg="brand.primary"
                             color="white"
                             fontWeight="bold"
                           />
@@ -375,7 +360,7 @@ const Users = () => {
                       </Td>
                       <Td py={4}>
                         <Badge
-                          colorScheme={user.userClass.includes('Contractor') ? 'blue' : 'orange'}
+                          colorScheme="blue"
                           px={3}
                           py={1}
                           borderRadius="full"
@@ -427,12 +412,12 @@ const Users = () => {
                           >
                             <MoreVertical size={16} />
                           </MenuButton>
-                          <MenuList shadow="lg" borderRadius="lg" border="1px solid" borderColor="gray.200">
+                          <MenuList shadow="md" borderRadius="lg" border="1px solid" borderColor="gray.200">
                             {user.enabled ? (
                               <MenuItem
                                 icon={<XCircle size={16} />}
                                 onClick={() => handleDeactivate(user.id)}
-                                _hover={{ bg: 'orange.50', color: 'orange.700' }}
+                                _hover={{ bg: 'gray.50' }}
                               >
                                 {t('admin.users.deactivate')}
                               </MenuItem>
@@ -440,7 +425,7 @@ const Users = () => {
                               <MenuItem
                                 icon={<CheckCircle size={16} />}
                                 onClick={() => handleActivate(user.id)}
-                                _hover={{ bg: 'green.50', color: 'green.700' }}
+                                _hover={{ bg: 'gray.50' }}
                               >
                                 {t('admin.users.activate')}
                               </MenuItem>
@@ -449,7 +434,7 @@ const Users = () => {
                               icon={<Trash2 size={16} />}
                               onClick={() => handleDelete(user.id)}
                               color="red.500"
-                              _hover={{ bg: 'red.50', color: 'red.700' }}
+                              _hover={{ bg: 'red.50' }}
                             >
                               {t('admin.users.delete')}
                             </MenuItem>
@@ -484,7 +469,7 @@ const Users = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+          <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200">
             <CardBody>
               <HStack justify="center" spacing={4}>
                 <Button
