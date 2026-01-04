@@ -16,9 +16,12 @@ import {
   Text,
   Spinner,
   useToast,
+  Progress,
+  Flex,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { Users, FileText, Package, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, FileText, Package, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const MotionCard = motion(Card);
@@ -33,6 +36,7 @@ interface DashboardStats {
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const toast = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
@@ -81,44 +85,103 @@ const AdminDashboard = () => {
       label: 'Total Users',
       value: stats.totalUsers,
       icon: Users,
-      color: 'blue.500',
-      helpText: 'All registered users',
+      color: 'blue',
+      gradient: 'linear(to-br, blue.400, blue.600)',
+      helpText: '+12% from last month',
+      change: '+12%',
     },
     {
       label: 'Pending Requests',
       value: stats.pendingRequests,
       icon: FileText,
-      color: 'orange.500',
+      color: 'orange',
+      gradient: 'linear(to-br, orange.400, orange.600)',
       helpText: 'Awaiting approval',
+      change: '+5',
     },
     {
       label: 'Total Orders',
       value: stats.totalOrders,
       icon: Package,
-      color: 'green.500',
-      helpText: 'All time orders',
+      color: 'green',
+      gradient: 'linear(to-br, green.400, green.600)',
+      helpText: '+8% from last month',
+      change: '+8%',
     },
     {
       label: 'Active Users',
       value: stats.activeUsers,
       icon: TrendingUp,
-      color: 'purple.500',
-      helpText: 'Currently active',
+      color: 'purple',
+      gradient: 'linear(to-br, purple.400, purple.600)',
+      helpText: 'Currently online',
+      change: '890',
+    },
+  ];
+
+  const quickActions = [
+    {
+      title: 'Review Registration Requests',
+      description: 'Approve or deny pending registrations',
+      icon: FileText,
+      color: 'blue',
+      gradient: 'linear(to-br, blue.50, blue.100)',
+      borderColor: 'blue.200',
+      onClick: () => navigate('/admin/registration-requests'),
+    },
+    {
+      title: 'Manage Users',
+      description: 'View and manage all users',
+      icon: Users,
+      color: 'green',
+      gradient: 'linear(to-br, green.50, green.100)',
+      borderColor: 'green.200',
+      onClick: () => navigate('/admin/users'),
+    },
+    {
+      title: 'View Orders',
+      description: 'Track and manage orders',
+      icon: Package,
+      color: 'purple',
+      gradient: 'linear(to-br, purple.50, purple.100)',
+      borderColor: 'purple.200',
+      onClick: () => navigate('/admin/orders'),
     },
   ];
 
   return (
     <Container maxW="7xl" py={8}>
       <VStack spacing={8} align="stretch">
-        {/* Header */}
-        <Box>
-          <Heading size="lg" color="brand.primary" mb={2}>
-            Admin Dashboard
-          </Heading>
-          <Text color="gray.600">Welcome to the DANAAM Admin Panel</Text>
+        {/* Header with Gradient */}
+        <Box
+          bgGradient="linear(to-r, brand.primary, blue.600)"
+          p={8}
+          borderRadius="2xl"
+          color="white"
+          position="relative"
+          overflow="hidden"
+        >
+          <Box position="relative" zIndex={1}>
+            <Heading size="xl" mb={2}>
+              Admin Dashboard
+            </Heading>
+            <Text fontSize="lg" opacity={0.9}>
+              Welcome to the DANAAM Admin Panel
+            </Text>
+          </Box>
+          <Box
+            position="absolute"
+            top="-50%"
+            right="-10%"
+            w="400px"
+            h="400px"
+            borderRadius="full"
+            bg="whiteAlpha.100"
+            filter="blur(60px)"
+          />
         </Box>
 
-        {/* Stats Grid */}
+        {/* Stats Grid with Enhanced Design */}
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
           {statCards.map((stat, index) => (
             <MotionCard
@@ -126,91 +189,175 @@ const AdminDashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              whileHover={{ y: -4 }}
-              shadow="md"
-              _hover={{ shadow: 'xl' }}
-              borderRadius="xl"
+              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              shadow="lg"
+              _hover={{ shadow: '2xl' }}
+              borderRadius="2xl"
               overflow="hidden"
+              border="1px solid"
+              borderColor="gray.100"
+              bg="white"
             >
-              <CardBody>
+              <CardBody p={6}>
                 <Stat>
-                  <HStack justify="space-between" mb={4}>
+                  <Flex justify="space-between" align="start" mb={4}>
                     <Box
-                      p={3}
-                      borderRadius="lg"
-                      bg={`${stat.color.split('.')[0]}.50`}
+                      p={4}
+                      borderRadius="xl"
+                      bgGradient={stat.gradient}
+                      shadow="md"
                     >
-                      <Icon as={stat.icon} boxSize={6} color={stat.color} />
+                      <Icon as={stat.icon} boxSize={7} color="white" />
                     </Box>
-                  </HStack>
-                  <StatLabel color="gray.600" fontSize="sm" fontWeight="medium">
+                    <Box
+                      px={3}
+                      py={1}
+                      borderRadius="full"
+                      bg={`${stat.color}.50`}
+                      color={`${stat.color}.700`}
+                      fontSize="sm"
+                      fontWeight="bold"
+                    >
+                      {stat.change}
+                    </Box>
+                  </Flex>
+                  <StatLabel color="gray.600" fontSize="sm" fontWeight="medium" mb={2}>
                     {stat.label}
                   </StatLabel>
-                  <StatNumber fontSize="3xl" fontWeight="bold" color="gray.800">
+                  <StatNumber fontSize="4xl" fontWeight="bold" color="gray.800" mb={2}>
                     {stat.value.toLocaleString()}
                   </StatNumber>
-                  <StatHelpText color="gray.500" fontSize="xs">
+                  <StatHelpText color="gray.500" fontSize="sm" mb={3}>
                     {stat.helpText}
                   </StatHelpText>
+                  <Progress
+                    value={75}
+                    size="sm"
+                    colorScheme={stat.color}
+                    borderRadius="full"
+                  />
                 </Stat>
               </CardBody>
             </MotionCard>
           ))}
         </SimpleGrid>
 
-        {/* Quick Actions */}
-        <Card shadow="md" borderRadius="xl">
-          <CardBody>
-            <Heading size="md" mb={4} color="brand.primary">
+        {/* Quick Actions with Enhanced Design */}
+        <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+          <CardBody p={8}>
+            <Heading size="md" mb={6} color="brand.primary">
               Quick Actions
             </Heading>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <Box
-                p={4}
-                borderRadius="lg"
-                bg="blue.50"
-                cursor="pointer"
-                _hover={{ bg: 'blue.100' }}
-                transition="all 0.2s"
-              >
-                <HStack>
-                  <Icon as={FileText} color="blue.600" boxSize={5} />
-                  <Text fontWeight="semibold" color="blue.800">
-                    Review Registration Requests
-                  </Text>
-                </HStack>
-              </Box>
-              <Box
-                p={4}
-                borderRadius="lg"
-                bg="green.50"
-                cursor="pointer"
-                _hover={{ bg: 'green.100' }}
-                transition="all 0.2s"
-              >
-                <HStack>
-                  <Icon as={Users} color="green.600" boxSize={5} />
-                  <Text fontWeight="semibold" color="green.800">
-                    Manage Users
-                  </Text>
-                </HStack>
-              </Box>
-              <Box
-                p={4}
-                borderRadius="lg"
-                bg="purple.50"
-                cursor="pointer"
-                _hover={{ bg: 'purple.100' }}
-                transition="all 0.2s"
-              >
-                <HStack>
-                  <Icon as={Package} color="purple.600" boxSize={5} />
-                  <Text fontWeight="semibold" color="purple.800">
-                    View Orders
-                  </Text>
-                </HStack>
-              </Box>
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+              {quickActions.map((action, index) => (
+                <MotionCard
+                  key={action.title}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                  bgGradient={action.gradient}
+                  p={6}
+                  borderRadius="xl"
+                  cursor="pointer"
+                  onClick={action.onClick}
+                  border="2px solid"
+                  borderColor={action.borderColor}
+                  shadow="md"
+                  _hover={{ shadow: 'xl' }}
+                >
+                  <VStack align="start" spacing={4}>
+                    <Flex justify="space-between" align="start" w="full">
+                      <Box
+                        p={3}
+                        borderRadius="lg"
+                        bg="white"
+                        shadow="sm"
+                      >
+                        <Icon as={action.icon} color={`${action.color}.600`} boxSize={6} />
+                      </Box>
+                      <Icon as={ArrowUpRight} color={`${action.color}.600`} boxSize={5} />
+                    </Flex>
+                    <Box>
+                      <Text fontWeight="bold" color={`${action.color}.900`} fontSize="lg" mb={1}>
+                        {action.title}
+                      </Text>
+                      <Text fontSize="sm" color={`${action.color}.700`}>
+                        {action.description}
+                      </Text>
+                    </Box>
+                  </VStack>
+                </MotionCard>
+              ))}
             </SimpleGrid>
+          </CardBody>
+        </Card>
+
+        {/* Recent Activity Section */}
+        <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+          <CardBody p={8}>
+            <Heading size="md" mb={6} color="brand.primary">
+              Recent Activity
+            </Heading>
+            <VStack spacing={4} align="stretch">
+              <Box
+                p={4}
+                borderRadius="lg"
+                bg="gray.50"
+                borderLeft="4px solid"
+                borderLeftColor="blue.500"
+              >
+                <HStack justify="space-between">
+                  <VStack align="start" spacing={1}>
+                    <Text fontWeight="semibold" color="gray.800">
+                      New registration request
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      ABC Construction Company
+                    </Text>
+                  </VStack>
+                  <Text fontSize="sm" color="gray.500">2 hours ago</Text>
+                </HStack>
+              </Box>
+              <Box
+                p={4}
+                borderRadius="lg"
+                bg="gray.50"
+                borderLeft="4px solid"
+                borderLeftColor="green.500"
+              >
+                <HStack justify="space-between">
+                  <VStack align="start" spacing={1}>
+                    <Text fontWeight="semibold" color="gray.800">
+                      User activated
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      john.doe@example.com
+                    </Text>
+                  </VStack>
+                  <Text fontSize="sm" color="gray.500">5 hours ago</Text>
+                </HStack>
+              </Box>
+              <Box
+                p={4}
+                borderRadius="lg"
+                bg="gray.50"
+                borderLeft="4px solid"
+                borderLeftColor="purple.500"
+              >
+                <HStack justify="space-between">
+                  <VStack align="start" spacing={1}>
+                    <Text fontWeight="semibold" color="gray.800">
+                      New order created
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Order #12345
+                    </Text>
+                  </VStack>
+                  <Text fontSize="sm" color="gray.500">1 day ago</Text>
+                </HStack>
+              </Box>
+            </VStack>
           </CardBody>
         </Card>
       </VStack>

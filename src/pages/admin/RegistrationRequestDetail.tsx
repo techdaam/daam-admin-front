@@ -22,10 +22,13 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Icon,
+  Flex,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, XCircle, Eye, Download } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Eye, Download, Building2, Mail, Phone, MapPin, Globe, FileText, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
   getRegistrationRequestById,
   approveRegistrationRequest,
@@ -33,6 +36,8 @@ import {
 } from '../../api/registrationRequests';
 import { RegistrationRequestDetail, RegistrationStatus, RegisterationType, FileDownload } from '../../types';
 import CustomPDFViewer from '../../tools/FilePreviewer';
+
+const MotionCard = motion(Card);
 
 const RegistrationRequestDetailPage = () => {
   const { t } = useTranslation();
@@ -123,13 +128,13 @@ const RegistrationRequestDetailPage = () => {
   const getStatusBadge = (status: RegistrationStatus) => {
     switch (status) {
       case RegistrationStatus.Requested:
-        return <Badge colorScheme="yellow" fontSize="md" px={3} py={1}>Requested</Badge>;
+        return <Badge colorScheme="yellow" fontSize="md" px={4} py={2} borderRadius="full" fontWeight="semibold">Requested</Badge>;
       case RegistrationStatus.Accepted:
-        return <Badge colorScheme="green" fontSize="md" px={3} py={1}>Accepted</Badge>;
+        return <Badge colorScheme="green" fontSize="md" px={4} py={2} borderRadius="full" fontWeight="semibold">Accepted</Badge>;
       case RegistrationStatus.Declined:
-        return <Badge colorScheme="red" fontSize="md" px={3} py={1}>Declined</Badge>;
+        return <Badge colorScheme="red" fontSize="md" px={4} py={2} borderRadius="full" fontWeight="semibold">Declined</Badge>;
       default:
-        return <Badge fontSize="md" px={3} py={1}>Unknown</Badge>;
+        return <Badge fontSize="md" px={4} py={2} borderRadius="full" fontWeight="semibold">Unknown</Badge>;
     }
   };
 
@@ -158,15 +163,28 @@ const RegistrationRequestDetailPage = () => {
     document.body.removeChild(link);
   };
 
-  const renderDocumentCard = (fileDownload: FileDownload, title: string, fileId: string) => {
+  const renderDocumentCard = (fileDownload: FileDownload, title: string, fileId: string, color: string) => {
     if (!fileDownload.presignedUrl || !fileDownload.fileName) {
       return (
-        <Box p={4} border="1px solid" borderColor="gray.200" borderRadius="md" bg="gray.50">
-          <VStack align="start" spacing={2}>
-            <Text fontSize="md" fontWeight="semibold" color="gray.700">{title}</Text>
-            <Text fontSize="sm" color="gray.500">File not available</Text>
-          </VStack>
-        </Box>
+        <MotionCard
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          border="2px dashed"
+          borderColor="gray.300"
+          borderRadius="xl"
+          bg="gray.50"
+        >
+          <CardBody p={6}>
+            <VStack align="start" spacing={3}>
+              <HStack>
+                <Icon as={FileText} boxSize={6} color="gray.400" />
+                <Text fontSize="lg" fontWeight="bold" color="gray.600">{title}</Text>
+              </HStack>
+              <Text fontSize="sm" color="gray.500">File not available</Text>
+            </VStack>
+          </CardBody>
+        </MotionCard>
       );
     }
 
@@ -175,30 +193,65 @@ const RegistrationRequestDetailPage = () => {
     const fileSizeKB = (fileDownload.fileSize / 1024).toFixed(2);
     
     return (
-      <Box border="1px solid" borderColor="gray.200" borderRadius="md" overflow="hidden">
+      <MotionCard
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        border="1px solid"
+        borderColor="gray.200"
+        borderRadius="xl"
+        overflow="hidden"
+        shadow="md"
+        _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
+      >
         {/* File Info Header */}
-        <Box p={4} bg="gray.50" borderBottom="1px solid" borderColor="gray.200">
-          <VStack align="start" spacing={2}>
-            <Text fontSize="md" fontWeight="semibold" color="gray.700">{title}</Text>
-            <HStack spacing={4} fontSize="sm" color="gray.600">
-              <Text>{fileDownload.fileName}</Text>
+        <Box
+          p={6}
+          bgGradient={`linear(to-br, ${color}.50, ${color}.100)`}
+          borderBottom="1px solid"
+          borderColor="gray.200"
+        >
+          <VStack align="start" spacing={3}>
+            <HStack>
+              <Box
+                p={3}
+                borderRadius="lg"
+                bgGradient={`linear(to-br, ${color}.400, ${color}.600)`}
+                color="white"
+              >
+                <Icon as={FileText} boxSize={6} />
+              </Box>
+              <VStack align="start" spacing={0}>
+                <Text fontSize="lg" fontWeight="bold" color="gray.800">{title}</Text>
+                <HStack spacing={2} fontSize="sm" color="gray.600">
+                  <Text>{fileDownload.fileName}</Text>
+                </HStack>
+              </VStack>
+            </HStack>
+            <HStack spacing={4} fontSize="sm" color={`${color}.700`} fontWeight="medium">
+              <HStack>
+                <Text>Size:</Text>
+                <Text fontWeight="bold">{fileSizeKB} KB</Text>
+              </HStack>
               <Text>•</Text>
-              <Text>{fileSizeKB} KB</Text>
-              <Text>•</Text>
-              <Text textTransform="uppercase">{extension}</Text>
+              <HStack>
+                <Text>Format:</Text>
+                <Text fontWeight="bold" textTransform="uppercase">{extension}</Text>
+              </HStack>
             </HStack>
           </VStack>
         </Box>
 
         {/* Action Buttons */}
-        <Box p={4} bg="white">
+        <CardBody p={6} bg="white">
           <HStack spacing={3}>
             <Button
               leftIcon={<Eye size={18} />}
-              colorScheme="blue"
+              colorScheme={color.split('.')[0]}
               size="md"
               onClick={() => handlePreview(url, fileDownload.fileName!)}
               flex={1}
+              borderRadius="lg"
             >
               Preview
             </Button>
@@ -209,12 +262,13 @@ const RegistrationRequestDetailPage = () => {
               size="md"
               onClick={() => handleDownload(url, fileDownload.fileName!)}
               flex={1}
+              borderRadius="lg"
             >
               Download
             </Button>
           </HStack>
-        </Box>
-      </Box>
+        </CardBody>
+      </MotionCard>
     );
   };
 
@@ -235,8 +289,10 @@ const RegistrationRequestDetailPage = () => {
       {/* Preview Modal */}
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{previewFile?.fileName}</ModalHeader>
+        <ModalContent borderRadius="2xl">
+          <ModalHeader borderBottom="1px solid" borderColor="gray.200">
+            {previewFile?.fileName}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             {previewFile && (
@@ -250,6 +306,7 @@ const RegistrationRequestDetailPage = () => {
                       maxW="100%"
                       objectFit="contain"
                       mx="auto"
+                      borderRadius="lg"
                     />
                   </Box>
                 ) : previewFile.extension === 'pdf' ? (
@@ -258,17 +315,10 @@ const RegistrationRequestDetailPage = () => {
                     h="70vh"
                     border="1px solid"
                     borderColor="gray.300"
-                    borderRadius="md"
+                    borderRadius="lg"
                     overflow="hidden"
                   >
-                    {/* <iframe
-                      src={previewFile.url}
-                      width="100%"
-                      height="100%"
-                      title={previewFile.fileName}
-                      style={{ border: 'none' }}
-                    /> */}
-                    <CustomPDFViewer presignedUrl={previewFile.url}  ></CustomPDFViewer>
+                    <CustomPDFViewer presignedUrl={previewFile.url} />
                   </Box>
                 ) : (
                   <Box textAlign="center" py={8}>
@@ -279,6 +329,7 @@ const RegistrationRequestDetailPage = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       colorScheme="blue"
+                      borderRadius="lg"
                     >
                       Open in New Tab
                     </Button>
@@ -291,150 +342,287 @@ const RegistrationRequestDetailPage = () => {
       </Modal>
 
       <Container maxW="7xl" py={8}>
-      <VStack spacing={6} align="stretch">
-        {/* Header */}
-        <HStack justify="space-between">
-          <HStack>
-            <Button
-              leftIcon={<ArrowLeft size={20} />}
-              variant="ghost"
-              onClick={() => navigate('/admin/registration-requests')}
-            >
-              Back
-            </Button>
-            <Heading size="lg" color="brand.primary">
-              Registration Request Details
-            </Heading>
-          </HStack>
-          {getStatusBadge(request.currentStatus)}
-        </HStack>
+        <VStack spacing={6} align="stretch">
+          {/* Header */}
+          <Box
+            bgGradient="linear(to-r, brand.primary, blue.600)"
+            p={8}
+            borderRadius="2xl"
+            color="white"
+            position="relative"
+            overflow="hidden"
+          >
+            <Box position="relative" zIndex={1}>
+              <HStack justify="space-between" mb={4}>
+                <Button
+                  leftIcon={<ArrowLeft size={20} />}
+                  variant="ghost"
+                  onClick={() => navigate('/admin/registration-requests')}
+                  color="white"
+                  _hover={{ bg: 'whiteAlpha.200' }}
+                  borderRadius="lg"
+                >
+                  Back to Requests
+                </Button>
+                {getStatusBadge(request.currentStatus)}
+              </HStack>
+              <Heading size="xl">Registration Request Details</Heading>
+              <Text fontSize="lg" opacity={0.9} mt={2}>
+                {request.companyName}
+              </Text>
+            </Box>
+            <Box
+              position="absolute"
+              top="-50%"
+              right="-10%"
+              w="400px"
+              h="400px"
+              borderRadius="full"
+              bg="whiteAlpha.100"
+              filter="blur(60px)"
+            />
+          </Box>
 
-        {/* Company Information */}
-        <Card shadow="md" borderRadius="xl">
-          <CardBody>
-            <Heading size="md" mb={4} color="brand.primary">
-              Company Information
-            </Heading>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Company Name</Text>
-                <Text fontWeight="semibold">{request.companyName}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Type</Text>
-                <Text fontWeight="semibold">{getTypeLabel(request.type)}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Country</Text>
-                <Text fontWeight="semibold">{request.country}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>City</Text>
-                <Text fontWeight="semibold">{request.city}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Commercial License Number</Text>
-                <Text fontWeight="semibold">{request.commercialLicenseNumber}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Website</Text>
-                <Text fontWeight="semibold">{request.website || 'N/A'}</Text>
-              </Box>
-            </SimpleGrid>
-          </CardBody>
-        </Card>
+          {/* Company Information */}
+          <MotionCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            shadow="lg"
+            borderRadius="2xl"
+            border="1px solid"
+            borderColor="gray.100"
+          >
+            <CardBody p={8}>
+              <Flex align="center" mb={6}>
+                <Box
+                  p={3}
+                  borderRadius="xl"
+                  bgGradient="linear(to-br, blue.400, blue.600)"
+                  color="white"
+                  mr={4}
+                >
+                  <Icon as={Building2} boxSize={7} />
+                </Box>
+                <Heading size="md" color="brand.primary">
+                  Company Information
+                </Heading>
+              </Flex>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={Building2} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Company Name</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.companyName}</Text>
+                </Box>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={FileText} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Type</Text>
+                  </HStack>
+                  <Badge
+                    colorScheme={request.type === RegisterationType.AsContractors ? 'blue' : 'orange'}
+                    fontSize="md"
+                    px={4}
+                    py={2}
+                    borderRadius="full"
+                    fontWeight="semibold"
+                  >
+                    {getTypeLabel(request.type)}
+                  </Badge>
+                </Box>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={MapPin} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Country</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.country}</Text>
+                </Box>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={MapPin} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">City</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.city}</Text>
+                </Box>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={FileText} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Commercial License Number</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.commercialLicenseNumber}</Text>
+                </Box>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={Globe} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Website</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.website || 'N/A'}</Text>
+                </Box>
+              </SimpleGrid>
+            </CardBody>
+          </MotionCard>
 
-        {/* Contact Information */}
-        <Card shadow="md" borderRadius="xl">
-          <CardBody>
-            <Heading size="md" mb={4} color="brand.primary">
-              Contact Information
-            </Heading>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>First Name</Text>
-                <Text fontWeight="semibold">{request.firstName}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Last Name</Text>
-                <Text fontWeight="semibold">{request.lastName}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Job Title</Text>
-                <Text fontWeight="semibold">{request.jobTitle}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Email</Text>
-                <Text fontWeight="semibold">{request.email}</Text>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Phone Number</Text>
-                <Text fontWeight="semibold">{request.phoneNumber}</Text>
-              </Box>
-            </SimpleGrid>
-          </CardBody>
-        </Card>
+          {/* Contact Information */}
+          <MotionCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            shadow="lg"
+            borderRadius="2xl"
+            border="1px solid"
+            borderColor="gray.100"
+          >
+            <CardBody p={8}>
+              <Flex align="center" mb={6}>
+                <Box
+                  p={3}
+                  borderRadius="xl"
+                  bgGradient="linear(to-br, green.400, green.600)"
+                  color="white"
+                  mr={4}
+                >
+                  <Icon as={Mail} boxSize={7} />
+                </Box>
+                <Heading size="md" color="brand.primary">
+                  Contact Information
+                </Heading>
+              </Flex>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                <Box>
+                  <Text fontSize="sm" color="gray.600" fontWeight="medium" mb={2}>First Name</Text>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.firstName}</Text>
+                </Box>
+                <Box>
+                  <Text fontSize="sm" color="gray.600" fontWeight="medium" mb={2}>Last Name</Text>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.lastName}</Text>
+                </Box>
+                <Box>
+                  <Text fontSize="sm" color="gray.600" fontWeight="medium" mb={2}>Job Title</Text>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.jobTitle}</Text>
+                </Box>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={Mail} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Email</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.email}</Text>
+                </Box>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={Phone} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Phone Number</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">{request.phoneNumber}</Text>
+                </Box>
+              </SimpleGrid>
+            </CardBody>
+          </MotionCard>
 
-        {/* Documents */}
-        <Card shadow="md" borderRadius="xl">
-          <CardBody>
-            <Heading size="md" mb={4} color="brand.primary">
+          {/* Documents */}
+          <Box>
+            <Heading size="md" mb={6} color="brand.primary">
               Documents
             </Heading>
-            <VStack spacing={4} align="stretch">
-              {request.commercialLicenseUrl && renderDocumentCard(request.commercialLicenseUrl, 'Commercial License', 'commercial')}
-              {request.taxLicenseUrl && renderDocumentCard(request.taxLicenseUrl, 'Tax License', 'tax')}
-            </VStack>
-          </CardBody>
-        </Card>
-
-        {/* Metadata */}
-        <Card shadow="md" borderRadius="xl">
-          <CardBody>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <Box>
-                <Text fontSize="sm" color="gray.600" mb={1}>Created At</Text>
-                <Text fontWeight="semibold">{new Date(request.createdAt).toLocaleString()}</Text>
-              </Box>
-              {request.updatedAt && (
-                <Box>
-                  <Text fontSize="sm" color="gray.600" mb={1}>Updated At</Text>
-                  <Text fontWeight="semibold">{new Date(request.updatedAt).toLocaleString()}</Text>
-                </Box>
-              )}
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+              {request.commercialLicenseUrl && renderDocumentCard(request.commercialLicenseUrl, 'Commercial License', 'commercial', 'blue')}
+              {request.taxLicenseUrl && renderDocumentCard(request.taxLicenseUrl, 'Tax License', 'tax', 'purple')}
             </SimpleGrid>
-          </CardBody>
-        </Card>
+          </Box>
 
-        {/* Actions */}
-        {request.currentStatus === RegistrationStatus.Requested && (
-          <Card shadow="md" borderRadius="xl" bg="gray.50">
-            <CardBody>
-              <HStack justify="center" spacing={4}>
-                <Button
-                  leftIcon={<CheckCircle size={20} />}
-                  colorScheme="green"
-                  size="lg"
-                  onClick={handleApprove}
-                  isLoading={processing}
-                >
-                  Approve Request
-                </Button>
-                <Button
-                  leftIcon={<XCircle size={20} />}
-                  colorScheme="red"
-                  size="lg"
-                  onClick={handleDeny}
-                  isLoading={processing}
-                >
-                  Deny Request
-                </Button>
-              </HStack>
+          {/* Metadata */}
+          <MotionCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            shadow="lg"
+            borderRadius="2xl"
+            border="1px solid"
+            borderColor="gray.100"
+          >
+            <CardBody p={8}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                <Box>
+                  <HStack mb={2}>
+                    <Icon as={Calendar} color="gray.500" boxSize={4} />
+                    <Text fontSize="sm" color="gray.600" fontWeight="medium">Created At</Text>
+                  </HStack>
+                  <Text fontWeight="semibold" fontSize="lg" color="gray.800">
+                    {new Date(request.createdAt).toLocaleString()}
+                  </Text>
+                </Box>
+                {request.updatedAt && (
+                  <Box>
+                    <HStack mb={2}>
+                      <Icon as={Calendar} color="gray.500" boxSize={4} />
+                      <Text fontSize="sm" color="gray.600" fontWeight="medium">Updated At</Text>
+                    </HStack>
+                    <Text fontWeight="semibold" fontSize="lg" color="gray.800">
+                      {new Date(request.updatedAt).toLocaleString()}
+                    </Text>
+                  </Box>
+                )}
+              </SimpleGrid>
             </CardBody>
-          </Card>
-        )}
-      </VStack>
-    </Container>
+          </MotionCard>
+
+          {/* Actions */}
+          {request.currentStatus === RegistrationStatus.Requested && (
+            <MotionCard
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              shadow="lg"
+              borderRadius="2xl"
+              bgGradient="linear(to-r, gray.50, blue.50)"
+              border="2px solid"
+              borderColor="blue.200"
+            >
+              <CardBody p={8}>
+                <VStack spacing={4}>
+                  <Heading size="md" color="brand.primary">
+                    Review Actions
+                  </Heading>
+                  <Text color="gray.600" textAlign="center">
+                    Please review all the information above before making a decision
+                  </Text>
+                  <HStack justify="center" spacing={4} pt={4}>
+                    <Button
+                      leftIcon={<CheckCircle size={20} />}
+                      colorScheme="green"
+                      size="lg"
+                      onClick={handleApprove}
+                      isLoading={processing}
+                      borderRadius="lg"
+                      px={10}
+                      shadow="md"
+                      _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
+                      transition="all 0.2s"
+                    >
+                      Approve Request
+                    </Button>
+                    <Button
+                      leftIcon={<XCircle size={20} />}
+                      colorScheme="red"
+                      size="lg"
+                      onClick={handleDeny}
+                      isLoading={processing}
+                      borderRadius="lg"
+                      px={10}
+                      shadow="md"
+                      _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
+                      transition="all 0.2s"
+                    >
+                      Deny Request
+                    </Button>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </MotionCard>
+          )}
+        </VStack>
+      </Container>
     </>
   );
 };
