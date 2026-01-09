@@ -104,7 +104,7 @@ const RegistrationRequests = () => {
   const getStatusBadge = (status: RegistrationStatus) => {
     switch (status) {
       case RegistrationStatus.Requested:
-        return <Badge colorScheme="yellow" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.requested')}</Badge>;
+        return <Badge colorScheme="gray" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.requested')}</Badge>;
       case RegistrationStatus.Accepted:
         return <Badge colorScheme="green" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.accepted')}</Badge>;
       case RegistrationStatus.Declined:
@@ -115,11 +115,9 @@ const RegistrationRequests = () => {
   };
 
   const getTypeBadge = (type: RegisterationType) => {
-    if (type === RegisterationType.AsContractors) {
-      return <Badge colorScheme="blue" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.contractor')}</Badge>;
-    } else {
-      return <Badge colorScheme="orange" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">{t('admin.registrationRequests.supplier')}</Badge>;
-    }
+    return <Badge colorScheme="blue" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="semibold">
+      {type === RegisterationType.AsContractors ? t('admin.registrationRequests.contractor') : t('admin.registrationRequests.supplier')}
+    </Badge>;
   };
 
   const handleApprove = async (id: string) => {
@@ -188,62 +186,46 @@ const RegistrationRequests = () => {
   return (
     <Container maxW="7xl" py={8}>
       <VStack spacing={6} align="stretch">
-        {/* Header with Gradient */}
+        {/* Header */}
         <Box
-          bgGradient="linear(to-r, brand.primary, blue.600)"
+          bg="brand.primary"
           p={8}
-          borderRadius="2xl"
+          borderRadius="xl"
           color="white"
-          position="relative"
-          overflow="hidden"
         >
-          <Box position="relative" zIndex={1}>
-            <Flex justify="space-between" align="center">
-              <Box>
-                <Heading size="xl" mb={2}>
-                  {t('admin.registrationRequests.title')}
-                </Heading>
-                <Text fontSize="lg" opacity={0.9}>
-                  {t('admin.registrationRequests.subtitle')}
-                </Text>
-              </Box>
-              <Box
-                p={4}
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                backdropFilter="blur(10px)"
-              >
-                <Icon as={FileText} boxSize={10} />
-              </Box>
-            </Flex>
-          </Box>
-          <Box
-            position="absolute"
-            top="-50%"
-            right="-10%"
-            w="400px"
-            h="400px"
-            borderRadius="full"
-            bg="whiteAlpha.100"
-            filter="blur(60px)"
-          />
+          <Flex justify="space-between" align="center">
+            <Box>
+              <Heading size="xl" mb={2}>
+                {t('admin.registrationRequests.title')}
+              </Heading>
+              <Text fontSize="lg" opacity={0.9}>
+                {t('admin.registrationRequests.subtitle')}
+              </Text>
+            </Box>
+            <Box
+              p={4}
+              borderRadius="lg"
+              bg="whiteAlpha.200"
+            >
+              <Icon as={FileText} boxSize={10} />
+            </Box>
+          </Flex>
         </Box>
 
         {/* Stats Summary */}
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-          <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+          <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200">
             <CardBody p={6}>
               <HStack spacing={4}>
                 <Box
                   p={4}
                   borderRadius="xl"
-                  bgGradient="linear(to-br, yellow.400, yellow.600)"
-                  color="white"
+                  bg="gray.50"
                 >
-                  <Icon as={Clock} boxSize={8} />
+                  <Icon as={Clock} boxSize={8} color="brand.primary" />
                 </Box>
                 <VStack align="start" spacing={0}>
-                  <Text fontSize="3xl" fontWeight="bold" color="yellow.600">
+                  <Text fontSize="3xl" fontWeight="bold" color="gray.800">
                     {activeTab === 0 ? requests.length : '-'}
                   </Text>
                   <Text fontSize="sm" color="gray.600">{t('admin.registrationRequests.pendingRequests')}</Text>
@@ -252,19 +234,18 @@ const RegistrationRequests = () => {
             </CardBody>
           </Card>
 
-          <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+          <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200">
             <CardBody p={6}>
               <HStack spacing={4}>
                 <Box
                   p={4}
                   borderRadius="xl"
-                  bgGradient="linear(to-br, green.400, green.600)"
-                  color="white"
+                  bg="gray.50"
                 >
-                  <Icon as={ThumbsUp} boxSize={8} />
+                  <Icon as={ThumbsUp} boxSize={8} color="brand.primary" />
                 </Box>
                 <VStack align="start" spacing={0}>
-                  <Text fontSize="3xl" fontWeight="bold" color="green.600">
+                  <Text fontSize="3xl" fontWeight="bold" color="gray.800">
                     {activeTab === 1 ? requests.length : '-'}
                   </Text>
                   <Text fontSize="sm" color="gray.600">{t('admin.registrationRequests.accepted')}</Text>
@@ -273,19 +254,18 @@ const RegistrationRequests = () => {
             </CardBody>
           </Card>
 
-          <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+          <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200">
             <CardBody p={6}>
               <HStack spacing={4}>
                 <Box
                   p={4}
                   borderRadius="xl"
-                  bgGradient="linear(to-br, red.400, red.600)"
-                  color="white"
+                  bg="gray.50"
                 >
-                  <Icon as={ThumbsDown} boxSize={8} />
+                  <Icon as={ThumbsDown} boxSize={8} color="brand.primary" />
                 </Box>
                 <VStack align="start" spacing={0}>
-                  <Text fontSize="3xl" fontWeight="bold" color="red.600">
+                  <Text fontSize="3xl" fontWeight="bold" color="gray.800">
                     {activeTab === 2 ? requests.length : '-'}
                   </Text>
                   <Text fontSize="sm" color="gray.600">{t('admin.registrationRequests.declined')}</Text>
@@ -296,12 +276,12 @@ const RegistrationRequests = () => {
         </SimpleGrid>
 
         {/* Tabs */}
-        <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100" overflow="hidden">
+        <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200" overflow="hidden">
           <Tabs index={activeTab} onChange={handleTabChange} colorScheme="blue">
             <Box bg="gray.50" px={6} pt={6} borderBottom="2px solid" borderColor="gray.200">
               <TabList border="none">
                 <Tab
-                  _selected={{ color: 'yellow.600', borderColor: 'yellow.600', borderBottomWidth: '3px' }}
+                  _selected={{ color: 'blue.600', borderColor: 'blue.600', borderBottomWidth: '3px' }}
                   fontWeight="semibold"
                   fontSize="md"
                   pb={4}
@@ -309,13 +289,13 @@ const RegistrationRequests = () => {
                   <HStack spacing={2}>
                     <Icon as={Clock} boxSize={4} />
                     <Text>{t('admin.registrationRequests.pending')}</Text>
-                    <Badge colorScheme="yellow" borderRadius="full">
+                    <Badge colorScheme="gray" borderRadius="full">
                       {activeTab === 0 ? requests.length : ''}
                     </Badge>
                   </HStack>
                 </Tab>
                 <Tab
-                  _selected={{ color: 'green.600', borderColor: 'green.600', borderBottomWidth: '3px' }}
+                  _selected={{ color: 'blue.600', borderColor: 'blue.600', borderBottomWidth: '3px' }}
                   fontWeight="semibold"
                   fontSize="md"
                   pb={4}
@@ -323,13 +303,13 @@ const RegistrationRequests = () => {
                   <HStack spacing={2}>
                     <Icon as={CheckCircle} boxSize={4} />
                     <Text>{t('admin.registrationRequests.accepted')}</Text>
-                    <Badge colorScheme="green" borderRadius="full">
+                    <Badge colorScheme="gray" borderRadius="full">
                       {activeTab === 1 ? requests.length : ''}
                     </Badge>
                   </HStack>
                 </Tab>
                 <Tab
-                  _selected={{ color: 'red.600', borderColor: 'red.600', borderBottomWidth: '3px' }}
+                  _selected={{ color: 'blue.600', borderColor: 'blue.600', borderBottomWidth: '3px' }}
                   fontWeight="semibold"
                   fontSize="md"
                   pb={4}
@@ -337,7 +317,7 @@ const RegistrationRequests = () => {
                   <HStack spacing={2}>
                     <Icon as={XCircle} boxSize={4} />
                     <Text>{t('admin.registrationRequests.declined')}</Text>
-                    <Badge colorScheme="red" borderRadius="full">
+                    <Badge colorScheme="gray" borderRadius="full">
                       {activeTab === 2 ? requests.length : ''}
                     </Badge>
                   </HStack>
@@ -350,7 +330,7 @@ const RegistrationRequests = () => {
                 <TabPanel key={tabIndex} p={0}>
                   <Box p={6}>
                     {/* Search */}
-                    <Card shadow="md" borderRadius="xl" border="1px solid" borderColor="gray.200" mb={6}>
+                    <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200" mb={6}>
                       <CardBody p={4}>
                         <HStack spacing={4}>
                           <InputGroup maxW="500px">
@@ -414,7 +394,7 @@ const RegistrationRequests = () => {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.05 }}
-                              _hover={{ bg: 'blue.50' }}
+                              _hover={{ bg: 'gray.50' }}
                               borderBottom="1px solid"
                               borderColor="gray.100"
                             >
@@ -495,7 +475,7 @@ const RegistrationRequests = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <Card shadow="lg" borderRadius="2xl" border="1px solid" borderColor="gray.100">
+          <Card shadow="sm" borderRadius="xl" border="1px solid" borderColor="gray.200">
             <CardBody>
               <HStack justify="center" spacing={4}>
                 <Button

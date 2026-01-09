@@ -128,7 +128,7 @@ const RegistrationRequestDetailPage = () => {
   const getStatusBadge = (status: RegistrationStatus) => {
     switch (status) {
       case RegistrationStatus.Requested:
-        return <Badge colorScheme="yellow" fontSize="md" px={4} py={2} borderRadius="full" fontWeight="semibold">Requested</Badge>;
+        return <Badge colorScheme="gray" fontSize="md" px={4} py={2} borderRadius="full" fontWeight="semibold">Requested</Badge>;
       case RegistrationStatus.Accepted:
         return <Badge colorScheme="green" fontSize="md" px={4} py={2} borderRadius="full" fontWeight="semibold">Accepted</Badge>;
       case RegistrationStatus.Declined:
@@ -163,7 +163,7 @@ const RegistrationRequestDetailPage = () => {
     document.body.removeChild(link);
   };
 
-  const renderDocumentCard = (fileDownload: FileDownload, title: string, fileId: string, color: string) => {
+  const renderDocumentCard = (fileDownload: FileDownload, title: string, fileId: string) => {
     if (!fileDownload.presignedUrl || !fileDownload.fileName) {
       return (
         <MotionCard
@@ -201,13 +201,13 @@ const RegistrationRequestDetailPage = () => {
         borderColor="gray.200"
         borderRadius="xl"
         overflow="hidden"
-        shadow="md"
-        _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
+        shadow="sm"
+        _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
       >
         {/* File Info Header */}
         <Box
           p={6}
-          bgGradient={`linear(to-br, ${color}.50, ${color}.100)`}
+          bg="gray.50"
           borderBottom="1px solid"
           borderColor="gray.200"
         >
@@ -216,10 +216,9 @@ const RegistrationRequestDetailPage = () => {
               <Box
                 p={3}
                 borderRadius="lg"
-                bgGradient={`linear(to-br, ${color}.400, ${color}.600)`}
-                color="white"
+                bg="gray.100"
               >
-                <Icon as={FileText} boxSize={6} />
+                <Icon as={FileText} boxSize={6} color="brand.primary" />
               </Box>
               <VStack align="start" spacing={0}>
                 <Text fontSize="lg" fontWeight="bold" color="gray.800">{title}</Text>
@@ -228,7 +227,7 @@ const RegistrationRequestDetailPage = () => {
                 </HStack>
               </VStack>
             </HStack>
-            <HStack spacing={4} fontSize="sm" color={`${color}.700`} fontWeight="medium">
+            <HStack spacing={4} fontSize="sm" color="gray.700" fontWeight="medium">
               <HStack>
                 <Text>Size:</Text>
                 <Text fontWeight="bold">{fileSizeKB} KB</Text>
@@ -247,7 +246,7 @@ const RegistrationRequestDetailPage = () => {
           <HStack spacing={3}>
             <Button
               leftIcon={<Eye size={18} />}
-              colorScheme={color.split('.')[0]}
+              colorScheme="blue"
               size="md"
               onClick={() => handlePreview(url, fileDownload.fileName!)}
               flex={1}
@@ -257,7 +256,7 @@ const RegistrationRequestDetailPage = () => {
             </Button>
             <Button
               leftIcon={<Download size={18} />}
-              colorScheme="green"
+              colorScheme="blue"
               variant="outline"
               size="md"
               onClick={() => handleDownload(url, fileDownload.fileName!)}
@@ -345,42 +344,28 @@ const RegistrationRequestDetailPage = () => {
         <VStack spacing={6} align="stretch">
           {/* Header */}
           <Box
-            bgGradient="linear(to-r, brand.primary, blue.600)"
+            bg="brand.primary"
             p={8}
-            borderRadius="2xl"
+            borderRadius="xl"
             color="white"
-            position="relative"
-            overflow="hidden"
           >
-            <Box position="relative" zIndex={1}>
-              <HStack justify="space-between" mb={4}>
-                <Button
-                  leftIcon={<ArrowLeft size={20} />}
-                  variant="ghost"
-                  onClick={() => navigate('/admin/registration-requests')}
-                  color="white"
-                  _hover={{ bg: 'whiteAlpha.200' }}
-                  borderRadius="lg"
-                >
-                  Back to Requests
-                </Button>
-                {getStatusBadge(request.currentStatus)}
-              </HStack>
-              <Heading size="xl">Registration Request Details</Heading>
-              <Text fontSize="lg" opacity={0.9} mt={2}>
-                {request.companyName}
-              </Text>
-            </Box>
-            <Box
-              position="absolute"
-              top="-50%"
-              right="-10%"
-              w="400px"
-              h="400px"
-              borderRadius="full"
-              bg="whiteAlpha.100"
-              filter="blur(60px)"
-            />
+            <HStack justify="space-between" mb={4}>
+              <Button
+                leftIcon={<ArrowLeft size={20} />}
+                variant="ghost"
+                onClick={() => navigate('/admin/registration-requests')}
+                color="white"
+                _hover={{ bg: 'whiteAlpha.200' }}
+                borderRadius="lg"
+              >
+                Back to Requests
+              </Button>
+              {getStatusBadge(request.currentStatus)}
+            </HStack>
+            <Heading size="xl">Registration Request Details</Heading>
+            <Text fontSize="lg" opacity={0.9} mt={2}>
+              {request.companyName}
+            </Text>
           </Box>
 
           {/* Company Information */}
@@ -388,23 +373,22 @@ const RegistrationRequestDetailPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            shadow="lg"
-            borderRadius="2xl"
+            shadow="sm"
+            borderRadius="xl"
             border="1px solid"
-            borderColor="gray.100"
+            borderColor="gray.200"
           >
             <CardBody p={8}>
               <Flex align="center" mb={6}>
                 <Box
                   p={3}
                   borderRadius="xl"
-                  bgGradient="linear(to-br, blue.400, blue.600)"
-                  color="white"
+                  bg="gray.50"
                   mr={4}
                 >
-                  <Icon as={Building2} boxSize={7} />
+                  <Icon as={Building2} boxSize={7} color="brand.primary" />
                 </Box>
-                <Heading size="md" color="brand.primary">
+                <Heading size="md" color="gray.800">
                   Company Information
                 </Heading>
               </Flex>
@@ -422,7 +406,7 @@ const RegistrationRequestDetailPage = () => {
                     <Text fontSize="sm" color="gray.600" fontWeight="medium">Type</Text>
                   </HStack>
                   <Badge
-                    colorScheme={request.type === RegisterationType.AsContractors ? 'blue' : 'orange'}
+                    colorScheme="blue"
                     fontSize="md"
                     px={4}
                     py={2}
@@ -469,23 +453,22 @@ const RegistrationRequestDetailPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            shadow="lg"
-            borderRadius="2xl"
+            shadow="sm"
+            borderRadius="xl"
             border="1px solid"
-            borderColor="gray.100"
+            borderColor="gray.200"
           >
             <CardBody p={8}>
               <Flex align="center" mb={6}>
                 <Box
                   p={3}
                   borderRadius="xl"
-                  bgGradient="linear(to-br, green.400, green.600)"
-                  color="white"
+                  bg="gray.50"
                   mr={4}
                 >
-                  <Icon as={Mail} boxSize={7} />
+                  <Icon as={Mail} boxSize={7} color="brand.primary" />
                 </Box>
-                <Heading size="md" color="brand.primary">
+                <Heading size="md" color="gray.800">
                   Contact Information
                 </Heading>
               </Flex>
@@ -522,12 +505,12 @@ const RegistrationRequestDetailPage = () => {
 
           {/* Documents */}
           <Box>
-            <Heading size="md" mb={6} color="brand.primary">
+            <Heading size="md" mb={6} color="gray.800">
               Documents
             </Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-              {request.commercialLicenseUrl && renderDocumentCard(request.commercialLicenseUrl, 'Commercial License', 'commercial', 'blue')}
-              {request.taxLicenseUrl && renderDocumentCard(request.taxLicenseUrl, 'Tax License', 'tax', 'purple')}
+              {request.commercialLicenseUrl && renderDocumentCard(request.commercialLicenseUrl, 'Commercial License', 'commercial')}
+              {request.taxLicenseUrl && renderDocumentCard(request.taxLicenseUrl, 'Tax License', 'tax')}
             </SimpleGrid>
           </Box>
 
@@ -536,10 +519,10 @@ const RegistrationRequestDetailPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            shadow="lg"
-            borderRadius="2xl"
+            shadow="sm"
+            borderRadius="xl"
             border="1px solid"
-            borderColor="gray.100"
+            borderColor="gray.200"
           >
             <CardBody p={8}>
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
@@ -573,15 +556,15 @@ const RegistrationRequestDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 }}
-              shadow="lg"
-              borderRadius="2xl"
-              bgGradient="linear(to-r, gray.50, blue.50)"
-              border="2px solid"
-              borderColor="blue.200"
+              shadow="sm"
+              borderRadius="xl"
+              bg="gray.50"
+              border="1px solid"
+              borderColor="gray.200"
             >
               <CardBody p={8}>
                 <VStack spacing={4}>
-                  <Heading size="md" color="brand.primary">
+                  <Heading size="md" color="gray.800">
                     Review Actions
                   </Heading>
                   <Text color="gray.600" textAlign="center">
@@ -596,8 +579,8 @@ const RegistrationRequestDetailPage = () => {
                       isLoading={processing}
                       borderRadius="lg"
                       px={10}
-                      shadow="md"
-                      _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
+                      shadow="sm"
+                      _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
                       transition="all 0.2s"
                     >
                       Approve Request
@@ -610,8 +593,8 @@ const RegistrationRequestDetailPage = () => {
                       isLoading={processing}
                       borderRadius="lg"
                       px={10}
-                      shadow="md"
-                      _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
+                      shadow="sm"
+                      _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
                       transition="all 0.2s"
                     >
                       Deny Request
